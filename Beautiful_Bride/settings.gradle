@@ -1,0 +1,2 @@
+rootProject.name = 'Beautiful_Bride'
+include("react", "AI_ML")
