@@ -1,7 +1,7 @@
 package com.memory.beautifulbride.entitys.company;
 
-import com.memory.beautifulbride.entitys.basics.AbstractNeedDate;
-import com.memory.beautifulbride.entitys.image.DressImage;
+import com.memory.beautifulbride.entitys.logindata.AbstractLoginDataMapping;
+import com.memory.beautifulbride.entitys.dress.DressInfo;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -17,8 +17,9 @@ import java.util.List;
 @SuperBuilder(toBuilder = true)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
-public class Company extends AbstractNeedDate {
+public class Company extends AbstractLoginDataMapping {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "COMPANY_NO")
     protected final int companyNo = 0;
 
@@ -37,5 +38,5 @@ public class Company extends AbstractNeedDate {
     private String address;
 
     @OneToMany(mappedBy = "company")
-    private List<DressImage> dressImages;
+    private List<DressInfo> dressImages;
 }

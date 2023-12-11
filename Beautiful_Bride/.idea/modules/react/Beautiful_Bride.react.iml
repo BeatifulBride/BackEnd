@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module external.linked.project.id=":react" external.linked.project.path="$MODULE_DIR$/../../../react" external.root.project.path="$MODULE_DIR$/../../.." external.system.id="GRADLE" external.system.module.group="Beautiful_Bride" external.system.module.version="unspecified" type="JAVA_MODULE" version="4">
+  <component name="NewModuleRootManager" inherit-compiler-output="true">
+    <exclude-output />
+    <content url="file://$MODULE_DIR$/../../../react">
+      <excludeFolder url="file://$MODULE_DIR$/../../../react/.gradle" />
+      <excludeFolder url="file://$MODULE_DIR$/../../../react/build" />
+    </content>
+    <orderEntry type="inheritedJdk" />
+    <orderEntry type="sourceFolder" forTests="false" />
+  </component>
+  <component name="SonarLintModuleSettings">
+    <option name="uniqueId" value="dc5d6ac1-2d35-4533-be79-a6ae5897123f" />
+  </component>
+</module>

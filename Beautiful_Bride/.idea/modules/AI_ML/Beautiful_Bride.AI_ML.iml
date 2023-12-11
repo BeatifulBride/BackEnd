@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module external.linked.project.id=":AI_ML" external.linked.project.path="$MODULE_DIR$/../../../AI_ML" external.root.project.path="$MODULE_DIR$/../../.." external.system.id="GRADLE" external.system.module.group="Beautiful_Bride" external.system.module.version="unspecified" type="JAVA_MODULE" version="4">
+  <component name="NewModuleRootManager" inherit-compiler-output="true">
+    <exclude-output />
+    <content url="file://$MODULE_DIR$/../../../AI_ML">
+      <excludeFolder url="file://$MODULE_DIR$/../../../AI_ML/.gradle" />
+      <excludeFolder url="file://$MODULE_DIR$/../../../AI_ML/build" />
+    </content>
+    <orderEntry type="inheritedJdk" />
+    <orderEntry type="sourceFolder" forTests="false" />
+  </component>
+  <component name="SonarLintModuleSettings">
+    <option name="uniqueId" value="56947cf3-d97d-4d73-a7b9-fb56d779cb63" />
+  </component>
+</module>

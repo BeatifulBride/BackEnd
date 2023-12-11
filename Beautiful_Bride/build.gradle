@@ -47,46 +47,46 @@ dependencies {
 
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 
-    implementation "com.querydsl:querydsl-jpa:5.0.0:jakarta"
-    annotationProcessor "com.querydsl:querydsl-apt:5.0.0:jakarta"
+    implementation "com.querydsl:querydsl-jpa:${queryDslVersion}:jakarta"
+    annotationProcessor "com.querydsl:querydsl-apt:${queryDslVersion}:jakarta"
     annotationProcessor "jakarta.annotation:jakarta.annotation-api"
     annotationProcessor "jakarta.persistence:jakarta.persistence-api"
 
-    // Spring Docs
-    testImplementation 'org.springframework.restdocs:spring-restdocs-mockmvc'
+    // Swegger
+    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.0.2'
 
+    implementation 'org.javassist:javassist:3.29.2-GA'
 }
 
 // 진짜 가르키는 루트는 C:\Team_Proj\Beautiful_Bride\Beautiful_Bride\build\generated\sources\annotationProcessor\java\main\com\memory\beautifulbride\entitys 이다.
 def querydslDir = "${layout.buildDirectory.get().asFile}/generated/querydsl"
 
-querydsl {
-    jpa = true
-    querydslSourcesDir = querydslDir
-}
-
-sourceSets {
-    main.java.srcDir querydslDir
-}
-
 compileQuerydsl {
+    doFirst {
+        if (file(querydslDir).exists())
+            delete(file(querydslDir))
+    }
+
+    sourceSets {
+        main.java.srcDir querydslDir
+    }
+
+    querydsl {
+        jpa = true
+        querydslDefault = true
+        querydslSourcesDir = querydslDir
+    }
+
+    configurations {
+        compileOnly {
+            extendsFrom annotationProcessor
+        }
+        querydsl.extendsFrom compileClasspath
+    }
+
     options.annotationProcessorPath = configurations.querydsl
     source = file(querydslDir)
 }
-
-configurations {
-    compileOnly {
-        extendsFrom annotationProcessor
-    }
-    querydsl.extendsFrom compileClasspath
-}
-
-//If the file exists during compilation, an error occurs. Therefore added
-compileQuerydsl.doFirst {
-    if (file(querydslDir).exists())
-        delete(file(querydslDir))
-}
-
 
 tasks.named('test') {
     useJUnitPlatform()

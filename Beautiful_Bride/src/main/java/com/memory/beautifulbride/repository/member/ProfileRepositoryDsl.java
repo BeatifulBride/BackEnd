@@ -1,9 +1,12 @@
 package com.memory.beautifulbride.repository.member;
 
-import com.memory.beautifulbride.dtos.ProfileMainInfoDTO;
+import com.memory.beautifulbride.dtos.profile.ProfileMainInfoDTO;
+import com.memory.beautifulbride.dtos.profile.ProfileMyPageInfoDTO;
 
-import java.security.Principal;
+import java.util.Optional;
 
 public interface ProfileRepositoryDsl {
-    ProfileMainInfoDTO getMemMainInfo(Principal principal);
+    Optional<ProfileMainInfoDTO> getProfileMainInfo(String loginId);
+
+    Optional<ProfileMyPageInfoDTO> getProfileMyPageInfo(String loginId);
 }

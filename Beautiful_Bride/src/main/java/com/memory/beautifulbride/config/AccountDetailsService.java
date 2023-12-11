@@ -1,7 +1,7 @@
 package com.memory.beautifulbride.config;
 
-import com.memory.beautifulbride.entitys.basics.LoginData;
-import com.memory.beautifulbride.repository.basics.LoginDataRepository;
+import com.memory.beautifulbride.entitys.logindata.LoginData;
+import com.memory.beautifulbride.repository.logindata.LoginDataRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;

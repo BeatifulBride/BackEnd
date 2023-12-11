@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/.idea/Beautiful_Bride.iml" filepath="$PROJECT_DIR$/.idea/Beautiful_Bride.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/AI_ML/Beautiful_Bride.AI_ML.iml" filepath="$PROJECT_DIR$/.idea/modules/AI_ML/Beautiful_Bride.AI_ML.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/Beautiful_Bride.main.iml" filepath="$PROJECT_DIR$/.idea/modules/Beautiful_Bride.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/Beautiful_Bride.querydsl.iml" filepath="$PROJECT_DIR$/.idea/modules/Beautiful_Bride.querydsl.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/react/Beautiful_Bride.react.iml" filepath="$PROJECT_DIR$/.idea/modules/react/Beautiful_Bride.react.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/Beautiful_Bride.test.iml" filepath="$PROJECT_DIR$/.idea/modules/Beautiful_Bride.test.iml" />
+    </modules>
+  </component>
+</project>

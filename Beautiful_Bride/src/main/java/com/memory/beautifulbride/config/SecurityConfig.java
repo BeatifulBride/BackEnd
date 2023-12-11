@@ -1,6 +1,6 @@
 package com.memory.beautifulbride.config;
 
-import com.memory.beautifulbride.entitys.basics.BasicsKinds;
+import com.memory.beautifulbride.entitys.logindata.BasicsKinds;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -37,7 +37,7 @@ public class SecurityConfig {
 
                 .authorizeHttpRequests(registry ->
                         registry.requestMatchers("/admin/**").hasRole(BasicsKinds.ADMIN.toString())
-                                .requestMatchers("/tryon/**", "/mem/**").authenticated()
+                                //.requestMatchers("/tryon/**", "/mem/**").authenticated()
                                 .anyRequest().permitAll()
                 )
 

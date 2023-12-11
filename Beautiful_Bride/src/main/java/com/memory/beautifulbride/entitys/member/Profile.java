@@ -1,15 +1,18 @@
 package com.memory.beautifulbride.entitys.member;
 
+import com.memory.beautifulbride.entitys.dress.TryOnImage;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 
 import java.sql.Date;
+import java.time.LocalDate;
+import java.util.List;
 
 
 @Entity
-@Table(name = "TBL_MEM_PROFILE")
+@Table(name = "TBL_MEMBER_PROFILE")
 @Getter
 @Builder(toBuilder = true)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -36,5 +39,12 @@ public class Profile {
     @Column(name = "UPLOAD_DATE")
     @CreatedDate
     @LastModifiedDate
-    protected Date uploadDate;
+    @Builder.Default
+    protected Date uploadDate = Date.valueOf(LocalDate.now());
+
+    @OneToMany(mappedBy = "profile")
+    private List<ProfileDressMark> dressMarks;
+
+    @OneToMany(mappedBy = "profile")
+    private List<TryOnImage> tryOnImages;
 }
