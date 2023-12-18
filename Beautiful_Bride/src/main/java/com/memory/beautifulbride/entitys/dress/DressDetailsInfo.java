@@ -22,6 +22,11 @@ public class DressDetailsInfo {
     @JoinColumn(name = "DRESS_INDEX")
     private DressInfo dressInfo;
 
+    @Column(name = "DRESS_FABRIC")
+    @Convert(converter = DressFabricEnums.Convert.class)
+    @Enumerated(EnumType.STRING)
+    private DressFabricEnums dressFabricEnums;
+
     @Column(name = "DRESS_LENGTH")
     @Convert(converter = DressLengthEnums.Convert.class)
     @Enumerated(EnumType.STRING)

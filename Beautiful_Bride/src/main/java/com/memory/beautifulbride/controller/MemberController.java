@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -22,14 +23,16 @@ public class MemberController {
     private final MemberCommandService memberCommandService;
     private final MemberReadOnlyService memberReadOnlyService;
 
-    @PostMapping(value = "/maininfo", produces = MediaType.APPLICATION_JSON_VALUE)
+
+    //Get으로 변경
+    @GetMapping(value = "/maininfo", produces = MediaType.APPLICATION_JSON_VALUE)
     @Operation(summary = "멤버 이름과 웨딩 날짜를 반환합니다.",
             description = "메인 페이지에서 사용되는 멤버 정보입니다.")
     ResponseEntity<ProfileMainInfoDTO> getMemberMainInfo(Principal principal) {
         return ResponseEntity.ok(memberReadOnlyService.getMemberNameAndWeddingDay(principal.getName()));
     }
 
-    @PostMapping(value = "/maininfoTest", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/maininfoTest", produces = MediaType.APPLICATION_JSON_VALUE)
     @Operation(summary = "멤버 이름과 웨딩 날짜를 반환합니다.",
             description = "메인 페이지에서 사용되는 멤버 정보입니다.")
     ResponseEntity<ProfileMainInfoDTO> getMemberMainInfoTest(

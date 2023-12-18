@@ -10,11 +10,16 @@ public abstract class AbstractEnumToString<T extends Enum<T>> implements Attribu
 
     @Override
     public String convertToDatabaseColumn(T attribute) {
-        return attribute.toString();
+        return capitalizeFirst(attribute);
     }
 
     @Override
     public T convertToEntityAttribute(String dbData) {
         return Enum.valueOf(clazz, dbData);
+    }
+
+    private String capitalizeFirst(Enum<T> e) {
+        String x = e.name();
+        return x.substring(0, 1).toUpperCase() + x.substring(1).toLowerCase();
     }
 }

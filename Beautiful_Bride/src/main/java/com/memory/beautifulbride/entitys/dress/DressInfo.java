@@ -42,8 +42,8 @@ public class DressInfo {
     @LastModifiedDate
     private Date uploadDate;
 
-    @OneToOne
-    private DressMarkCount dressMarkCount;
+    /*@OneToOne
+    private DressMarkCount dressMarkCount;*/
 
     @OneToMany(mappedBy = "dressInfo", cascade = CascadeType.ALL)
     private List<DressImagePath> dressImagePath;

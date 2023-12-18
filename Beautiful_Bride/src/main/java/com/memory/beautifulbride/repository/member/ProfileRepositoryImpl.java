@@ -94,7 +94,6 @@ public class ProfileRepositoryImpl implements ProfileRepositoryDsl {
         StringPath dressImagePath;
         StringPath dressPNumber;
         StringPath companyName;
-
         return null;
     }
 

@@ -18,9 +18,9 @@ public class DressMarkCount {
     protected final int markIndex = 0;
 
     @OneToOne
-    private DressInfo dressImage;
+    private DressInfo dressInfo;
 
-    @Column(name = "DRESS_MARK_COUNT")
+    @Column(name = "MARK_COUNT")
     @Builder.Default
     private long markCount = 0;
 }

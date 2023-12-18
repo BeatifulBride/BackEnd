@@ -60,7 +60,7 @@ public class AuthController {
     ResponseEntity<String> resetAccountPwd(LoginDataRestPwdDTO dto) {
         return loginDataCommandService.resetAccountPwd(dto);
     }
-    @GetMapping("find/account/check/{loginId}{loginEmail}")
+    @GetMapping("find/account/check/{loginId}/{loginEmail}")
     @Operation(summary = "사용가 계정을 찾기 위한 요청입니다")
     ResponseEntity<String> accountCheck(@PathVariable(name = "loginId") String loginId,
                                         @PathVariable(name = "loginEmail") String loginEmail) {

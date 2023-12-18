@@ -4,8 +4,6 @@ import com.memory.beautifulbride.entitys.dress.definition.*;
 import lombok.Builder;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.List;
-
 @Builder(toBuilder = true)
 public record DressNewRegistrationDTO(
         MultipartFile main,
@@ -13,11 +11,15 @@ public record DressNewRegistrationDTO(
         MultipartFile side,
         MultipartFile back,
         String dressName,
-        Enum<DressLineEnum> dressLineEnum,
-        Enum<DressMaterialEnum> materialEnum,
-        Enum<DressNeckLineEnum> dressNeckLineEnum,
-        Enum<DressLengthEnums> dressLengthEnums,
-        Enum<DressSleeveEnum> dressSleeveEnum,
+        String brand,
+        String designer,
+        DressFabricEnums dressFabricEnums,
+        DressLengthEnums dressLengthEnums,
+        DressLineEnum dressLineEnum,
+        DressMaterialEnum materialEnum,
+        DressNeckLineEnum dressNeckLineEnum,
+        DressSeasonEnum dressSeasonEnum,
+        DressSleeveEnum dressSleeveEnum,
         String dressExplanation
 ) {
 }
