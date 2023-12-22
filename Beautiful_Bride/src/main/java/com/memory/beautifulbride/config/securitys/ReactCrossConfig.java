@@ -1,4 +1,4 @@
-package com.memory.beautifulbride.config;
+package com.memory.beautifulbride.config.securitys;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;

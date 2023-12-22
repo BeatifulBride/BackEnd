@@ -1,5 +1,5 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="Beautiful_Bride" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot">
+  <configuration default="false" name="BeautifulBrideApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot">
     <additionalParameters>
       <param>
         <option name="enabled" value="true" />

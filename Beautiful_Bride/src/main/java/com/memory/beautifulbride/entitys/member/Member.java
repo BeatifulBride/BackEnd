@@ -1,11 +1,20 @@
 package com.memory.beautifulbride.entitys.member;
 
+import com.memory.beautifulbride.dtos.member.MemberSignupDTO;
 import com.memory.beautifulbride.entitys.logindata.AbstractLoginDataMapping;
+import com.memory.beautifulbride.repository.logindata.LoginDataRepository;
+import com.memory.beautifulbride.service.logindata.LoginDataCommandService;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.experimental.SuperBuilder;
+import org.springframework.boot.CommandLineRunner;
+import org.springframework.stereotype.Component;
+
+import java.sql.Date;
+import java.time.LocalDate;
 
 @Entity
 @Table(name = "TBL_MEMBER")
@@ -28,7 +37,7 @@ public class Member extends AbstractLoginDataMapping {
     @JoinColumn(name = "PROFILE_INDEX")
     private Profile profile;
 
-/*    @Component
+    @Component
     @RequiredArgsConstructor
     @org.springframework.context.annotation.Profile("dev")
     static class DataInit implements CommandLineRunner {
@@ -43,10 +52,10 @@ public class Member extends AbstractLoginDataMapping {
                         .loginPwd("membertest1")
                         .loginEmail("membertest@test.com")
                         .memPhone("010-1234-1234")
-                        .memWeddingDate("2023-12-15")
+                        .memWeddingDate(Date.valueOf(LocalDate.now()))
                         .build();
                 loginDataCommandService.createMemberAccount(memberSignupDTO);
             }
         }
-    }*/
+    }
 }

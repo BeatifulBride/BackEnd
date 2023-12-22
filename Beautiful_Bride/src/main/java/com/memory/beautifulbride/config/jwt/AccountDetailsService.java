@@ -1,4 +1,4 @@
-package com.memory.beautifulbride.config;
+package com.memory.beautifulbride.config.jwt;
 
 import com.memory.beautifulbride.entitys.logindata.LoginData;
 import com.memory.beautifulbride.repository.logindata.LoginDataRepository;
@@ -32,7 +32,7 @@ public class AccountDetailsService implements UserDetailsService {
         List<GrantedAuthority> grantedAuthorities = Collections
                 .singletonList(
                         new SimpleGrantedAuthority(
-                                loginData.getKinds().getBasicsKinds().toString()
+                                loginData.getKinds().getBasicsKinds().name()
                         )
                 );
 

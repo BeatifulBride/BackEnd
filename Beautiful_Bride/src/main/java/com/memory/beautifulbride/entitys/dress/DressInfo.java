@@ -42,12 +42,12 @@ public class DressInfo {
     @LastModifiedDate
     private Date uploadDate;
 
-    /*@OneToOne
-    private DressMarkCount dressMarkCount;*/
+    @OneToOne
+    private DressMarkCount dressMarkCount;
 
     @OneToMany(mappedBy = "dressInfo", cascade = CascadeType.ALL)
     private List<DressImagePath> dressImagePath;
 
-    @OneToOne(fetch = FetchType.LAZY, targetEntity = DressDetailsInfo.class)
+    @OneToOne(fetch = FetchType.LAZY, targetEntity = DressDetailsInfo.class, cascade = CascadeType.ALL)
     private DressDetailsInfo dressDetailsInfo;
 }

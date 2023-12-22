@@ -6,20 +6,20 @@ import org.springframework.web.multipart.MultipartFile;
 
 @Builder(toBuilder = true)
 public record DressNewRegistrationDTO(
-        MultipartFile main,
         MultipartFile front,
         MultipartFile side,
         MultipartFile back,
         String dressName,
-        String brand,
+        String dressPNumber,
         String designer,
-        DressFabricEnums dressFabricEnums,
-        DressLengthEnums dressLengthEnums,
+        int dressPrice,
         DressLineEnum dressLineEnum,
-        DressMaterialEnum materialEnum,
         DressNeckLineEnum dressNeckLineEnum,
-        DressSeasonEnum dressSeasonEnum,
         DressSleeveEnum dressSleeveEnum,
+        DressFabricEnums dressFabricEnum,
+        DressLengthEnums dressLengthEnum,
+        DressMaterialEnum dressMaterialEnum,
+        DressSeasonEnum dressSeasonEnum,
         String dressExplanation
 ) {
 }

@@ -1,6 +1,13 @@
 package com.memory.beautifulbride.entitys.logindata;
 
 import com.memory.beautifulbride.config.custom.AbstractEnumToString;
+import com.memory.beautifulbride.repository.logindata.LoginDataKindsRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.boot.CommandLineRunner;
+import org.springframework.stereotype.Component;
+
+import java.util.Arrays;
+import java.util.List;
 
 public enum BasicsKinds {
     FREE, CHARGED, COMPANY, ADMIN;
@@ -12,11 +19,11 @@ public enum BasicsKinds {
     }
 
 
-/*    @Component
+    @Component
     @RequiredArgsConstructor
     public static class BasicsKindsDataInit implements CommandLineRunner {
 
-        private final KindsRepository initRepository;
+        private final LoginDataKindsRepository initRepository;
 
         @Override
         public void run(String... args) throws Exception {
@@ -28,5 +35,5 @@ public enum BasicsKinds {
                     .map(KindsTBL::new)
                     .forEach(initRepository::save);
         }
-    }*/
+    }
 }

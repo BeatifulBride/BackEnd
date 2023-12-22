@@ -661,3 +661,5 @@ Beautiful_Bride/build
 
 # End of https://www.toptal.com/developers/gitignore/api/windows,linux,java,python,react,node,visualstudiocode,pycharm,intellij+all,intellij
 /Beautiful_Bride/src/test/java/com/memory/beautifulbride/
+/Beautiful_Bride/src/test/*/*.jpg
+/Beautiful_Bride/src/test/*/*.png

@@ -1,13 +1,22 @@
 package com.memory.beautifulbride.controller;
 
+import com.memory.beautifulbride.config.jwt.JwtFilter;
+import com.memory.beautifulbride.config.jwt.TokenProvider;
 import com.memory.beautifulbride.dtos.company.CompanySignupDTO;
+import com.memory.beautifulbride.dtos.logindata.LoginDTO;
 import com.memory.beautifulbride.dtos.logindata.LoginDataRestPwdDTO;
 import com.memory.beautifulbride.dtos.member.MemberSignupDTO;
 import com.memory.beautifulbride.service.logindata.LoginDataCommandService;
 import com.memory.beautifulbride.service.logindata.LoginDataReadOnlyService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -19,6 +28,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 public class AuthController {
     private final LoginDataReadOnlyService loginDataReadOnlyService;
     private final LoginDataCommandService loginDataCommandService;
+    private final TokenProvider tokenProvider;
+    private final AuthenticationManagerBuilder authenticationManagerBuilder;
 
     @GetMapping("/auth/idcheck/{loginId}")
     @Operation(summary = "회원가입-기존 아이디 여부 확인",
@@ -65,5 +76,26 @@ public class AuthController {
     ResponseEntity<String> accountCheck(@PathVariable(name = "loginId") String loginId,
                                         @PathVariable(name = "loginEmail") String loginEmail) {
         return loginDataReadOnlyService.checkAccountIdandEmail(loginId,loginEmail);
+    }
+
+    @PostMapping("/auth/login")
+    @Operation()
+    ResponseEntity<String> login(LoginDTO loginDTO) {
+
+        UsernamePasswordAuthenticationToken authenticationToken =
+                new UsernamePasswordAuthenticationToken(loginDTO.LOGIN_ID(), loginDTO.LOGIN_PWD());
+
+        Authentication authentication = authenticationManagerBuilder
+                .getObject()
+                .authenticate(authenticationToken);
+
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+
+        String accessToken = tokenProvider.createToken(authentication);
+
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.add(JwtFilter.authorizationHeader, "Bearer " + accessToken);
+
+        return new ResponseEntity<>(accessToken, httpHeaders, HttpStatus.OK);
     }
 }

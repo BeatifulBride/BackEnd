@@ -40,7 +40,7 @@ public class LoginDataCommandService {
     public ResponseEntity<String> createCompanyAccount(CompanySignupDTO dto) {
         LoginData loginData = LoginData.builder()
                 .loginId(dto.loginId())
-                .loginPwd(dto.loginPwd())
+                .loginPwd(passwordEncoder.encode(dto.loginPwd()))
                 .loginEmail(dto.loginEmail())
                 .kinds(KindsTBL.builder().basicsKinds(BasicsKinds.COMPANY).build())
                 .build();
@@ -69,7 +69,7 @@ public class LoginDataCommandService {
         Member member = Member.builder()
                 .loginData(LoginData.builder()
                         .loginId(dto.loginId())
-                        .loginPwd(dto.loginPwd())
+                        .loginPwd(passwordEncoder.encode(dto.loginPwd()))
                         .loginEmail(dto.loginEmail())
                         .kinds(kindsTBL).build()
                 ).build();
@@ -83,7 +83,7 @@ public class LoginDataCommandService {
         try {
             if (dto.memWeddingDate() != null) {
                 newProfile = newProfile.toBuilder()
-                        .memWeddingDate(Date.valueOf(dto.memWeddingDate()))
+                        .memWeddingDate((dto.memWeddingDate()))
                         .build();
             }
 

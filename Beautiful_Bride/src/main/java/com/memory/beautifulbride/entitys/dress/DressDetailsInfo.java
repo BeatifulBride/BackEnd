@@ -18,6 +18,7 @@ public class DressDetailsInfo {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private final int dressDetailsIndex = 0;
 
+
     @OneToOne(optional = false, targetEntity = DressInfo.class)
     @JoinColumn(name = "DRESS_INDEX")
     private DressInfo dressInfo;

@@ -8,7 +8,7 @@ public class DressMyPageViewDTO {
     private int dressIndex;
     private String dressPath;
     private String dressName;
-    private Enum<DressLineEnum> dressLine;
+    private DressLineEnum dressLine;
     private String companyName;
     private String companyAddress;
     private int price;

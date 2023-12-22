@@ -2,6 +2,8 @@ package com.memory.beautifulbride.dtos.member;
 
 import lombok.Builder;
 
+import java.sql.Date;
+
 @Builder(toBuilder = true)
 public record MemberSignupDTO(
         String loginId,
@@ -9,6 +11,6 @@ public record MemberSignupDTO(
         String loginEmail,
         String memName,
         String memPhone,
-        String memWeddingDate
+        Date memWeddingDate
 ) {
 }
