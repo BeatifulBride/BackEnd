@@ -44,8 +44,10 @@ public class ImgSaveHandler {
         try (InputStream stream = multipartFile.getInputStream()) {
 
             //TODO 폴더 순차적으로 생성 가능하게 만들것
+            log.error(definition.getSavePath());
             createDirectories(definition.getSavePath(), permissions);
 
+            log.error(definition.getFullImagePath());
             Files.copy(stream, definition.getFullImagePath());
 
         } catch (IOException e) {
@@ -57,9 +59,19 @@ public class ImgSaveHandler {
             );
 
             log.error("해당 폴더 및 삭제 완료");
+            throw new IOException("이미지 저장 오류");
         }
     }
 
+    /**
+     * 폴더를 생성하기 위한 메서드 입니다. 폴더를 사전 방문후, 존재하지 않을 경우에만 생성을 시도합니다.
+     * @param directoryPath 생성할 폴더의 위치입니다.
+     * @param permissions 생성한 폴더의 권한 설정 입니다. 주어지지 않을 경우에 기본 권한을 사용 합니다.
+     *
+     * <p>directoryPath의 값을 C:\BeautifulB\Test 처럼 주어질 경우에는 C:\BeautifulB 경로에 Test 폴더 생성을 시도 합니다.</p>
+     *
+     * @throws IOException 권한 시도에 실패 하거나, 해당 디렉토리에 생성할 권한이 없을 경우에 오류가 반환됩니다.
+     * */
     private void createDirectories(@NotNull Path directoryPath, @NotNull Set<?> permissions) throws IOException {
         Set<?> convertedPermissions = osPermissions.crossPermissions(permissions);
         FileAttribute<?> attribute = osPermissions.createFileAttribute(convertedPermissions);
@@ -72,6 +84,7 @@ public class ImgSaveHandler {
         }
 
         if (Files.notExists(directoryPath)) Files.createDirectories(directoryPath);
+        System.out.println();
             /*Files.setAttribute(
                     directoryPath,
                     attribute.name(),

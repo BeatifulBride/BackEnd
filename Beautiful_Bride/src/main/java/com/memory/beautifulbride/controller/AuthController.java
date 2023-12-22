@@ -79,7 +79,7 @@ public class AuthController {
     }
 
     @PostMapping("/auth/login")
-    @Operation()
+    @Operation(summary = "로그인 요청 입니다.")
     ResponseEntity<String> login(LoginDTO loginDTO) {
 
         UsernamePasswordAuthenticationToken authenticationToken =

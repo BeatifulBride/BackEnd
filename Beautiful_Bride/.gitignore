@@ -196,3 +196,6 @@ gradle-app.setting
 
 src/test/*.png
 src/test/*.jpg
+/src/test/java/com/memory/testImg/
+
+src/resouces/application-sql.properties

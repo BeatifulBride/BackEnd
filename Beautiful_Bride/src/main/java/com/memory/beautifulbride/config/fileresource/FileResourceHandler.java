@@ -7,42 +7,40 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
+import java.nio.file.Path;
+
 
 @Configuration
 public class FileResourceHandler implements WebMvcConfigurer {
 
-    @Value("${ImgPath}")
-    private String imgFolder;
-
-    @Value("${WeddingDressImgPath}")
-    private String weddingDressImgPath;
+    @Value("${WeddingDressAbsPath}")
+    private Path weddingDressAbsPath;
+    @Value("${WeddingDressResPath}")
+    private String weddingDressResPath;
 
     @Value("${MemberImgPath}")
-    private String memberImgPath;
-
-    String resourcePreviousWord = "/imgs/";
+    private Path memberImgAbsPath;
+    @Value("${MemberImgResPath}")
+    private String memberImgResPath;
 
     @Getter
     private SimpleMvcResource weddingDress;
     @Getter
     private SimpleMvcResource memberImg;
 
+    /**외부에서 사용하기 위한 정의*/
     @PostConstruct
     public void init() {
-        weddingDress = new SimpleMvcResource(imgFolder, weddingDressImgPath, resourcePreviousWord);
-        memberImg = new SimpleMvcResource(imgFolder, memberImgPath, resourcePreviousWord);
+        weddingDress = new SimpleMvcResource(weddingDressAbsPath, weddingDressResPath);
+        memberImg = new SimpleMvcResource(memberImgAbsPath, memberImgResPath);
     }
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
+        registry.addResourceHandler(weddingDress.getResourcePath() + "**")
+                .addResourceLocations(weddingDress.getAbsolutePath().toUri().toString());
 
-        registry.addResourceHandler(resourcePreviousWord + "**")
-                .addResourceLocations("file://" + imgFolder);
-
-        registry.addResourceHandler(weddingDress.getResourcePath())
-                .addResourceLocations(weddingDress.getFileAbsolutePath());
-
-        registry.addResourceHandler(memberImg.getResourcePath())
-                .addResourceLocations(memberImg.getFileAbsolutePath());
+        registry.addResourceHandler(memberImg.getResourcePath() + "**")
+                .addResourceLocations(memberImg.getAbsolutePath().toUri().toString());
     }
 }

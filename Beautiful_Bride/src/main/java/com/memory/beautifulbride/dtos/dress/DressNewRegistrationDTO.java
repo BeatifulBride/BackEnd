@@ -1,6 +1,5 @@
 package com.memory.beautifulbride.dtos.dress;
 
-import com.memory.beautifulbride.entitys.dress.definition.*;
 import lombok.Builder;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -13,13 +12,6 @@ public record DressNewRegistrationDTO(
         String dressPNumber,
         String designer,
         int dressPrice,
-        DressLineEnum dressLineEnum,
-        DressNeckLineEnum dressNeckLineEnum,
-        DressSleeveEnum dressSleeveEnum,
-        DressFabricEnums dressFabricEnum,
-        DressLengthEnums dressLengthEnum,
-        DressMaterialEnum dressMaterialEnum,
-        DressSeasonEnum dressSeasonEnum,
         String dressExplanation
 ) {
 }

@@ -19,6 +19,7 @@ import java.util.stream.Stream;
 import static java.nio.file.attribute.AclEntryPermission.*;
 import static java.nio.file.attribute.PosixFilePermission.*;
 
+/** 각 환경에 따라 권한을 변환 하기 위한 정의 클래스 입니다. */
 @Log4j2
 public class OSPermissions {
 
@@ -49,6 +50,12 @@ public class OSPermissions {
         }
     }
 
+    /**
+     * 주어진 권한을 이용해 Set<AclEntry>를 생성 합니다.
+     *
+     * @param permissions 윈도우 권한 Set값을 받습니다. null이 주어졌을 경우 기본 권한을 생성 합니다.
+     * @return Set<AclEntry>
+     */
     private Set<AclEntry> createAclEntrySet(@Nullable Set<AclEntryPermission> permissions) throws IOException {
         String username = System.getProperty("user.name");
         UserPrincipalLookupService lookupService = FileSystems.getDefault().getUserPrincipalLookupService();
@@ -78,12 +85,23 @@ public class OSPermissions {
         return Set.of(aclEntry);
     }
 
+    /** AclFileAttributeView를 생성하기 위한 메서드 */
     private AclFileAttributeView createAclFileAttributeView(@Nullable List<AclEntry> permissions, Path folderPath) throws IOException {
         AclFileAttributeView aclAttr = Files.getFileAttributeView(folderPath, AclFileAttributeView.class);
         aclAttr.setAcl(permissions);
         return aclAttr;
     }
 
+    /**
+     * 개발 환경에서만 사용하기 권장 합니다.
+     * Os에 맞게 권한을 변환 시켜줍니다.
+     * 만약 OWNER_READ 객체가 주어졌을 경우 READ_DATA 객체로 변환 되는 방식 입니다.
+     *
+     * @apiNote {@link PosixFilePermission},
+     * {@link AclEntryPermission}
+     * {@link SimplePosixToAclMapper},
+     * {@link SimpleAclToPosixMapper}
+     */
     @SuppressWarnings("unchecked")
     public <T> Set<T> crossPermissions(@NotNull Set<?> permissions) {
 
@@ -103,6 +121,7 @@ public class OSPermissions {
         }
     }
 
+    /**Os 환경에 맞게 권한 설정을 변경하고 FileAttribute<> 객체를 반환하기 위한 메서드 입니다.*/
     @SuppressWarnings("unchecked")
     public <T> FileAttribute<T> createFileAttribute(Set<?> permissions) throws IOException {
 
@@ -146,6 +165,7 @@ public class OSPermissions {
     }
 
 
+    /**리눅스 권한을 판별하기 위한 Map값 맞을 경우 True 틀릴 경우 False*/
     private Boolean matchingLinuxOs(String os) {
         Map<String, String> linuxDistros = Map.of(
                 "ubuntu", "Ubuntu",

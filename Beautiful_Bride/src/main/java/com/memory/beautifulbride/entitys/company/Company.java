@@ -1,7 +1,7 @@
 package com.memory.beautifulbride.entitys.company;
 
-import com.memory.beautifulbride.entitys.logindata.AbstractLoginDataMapping;
 import com.memory.beautifulbride.entitys.dress.DressInfo;
+import com.memory.beautifulbride.entitys.logindata.AbstractLoginDataMapping;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;

@@ -18,7 +18,7 @@ public class DressImagePath {
     private final int pathIndex = 0;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "DRESS_INDEX")
+    @JoinColumn(name = "DRESS_INFO_INDEX")
     private DressInfo dressInfo;
 
     @Column(name = "PATH_VALUE")

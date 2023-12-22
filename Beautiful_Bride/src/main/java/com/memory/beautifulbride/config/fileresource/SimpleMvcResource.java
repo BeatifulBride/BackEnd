@@ -1,25 +1,31 @@
 package com.memory.beautifulbride.config.fileresource;
 
+import com.memory.beautifulbride.imgsavehandler.cross.PathUtil;
 import lombok.Getter;
 
-public class SimpleMvcResource {
-    @Getter
-    private String absolutePath;
-    private String resourcePath;
-    @Getter
-    private String pathPatterns;
+import java.io.File;
+import java.nio.file.Path;
 
-    public SimpleMvcResource(String absolutePath, String resourcePath, String pathPatterns) {
-        this.absolutePath = absolutePath;
+@Getter
+public class SimpleMvcResource {
+    private final Path absolutePath;
+    private final String resourcePath;
+    private final String s = File.separator;
+
+    public SimpleMvcResource(Path absolutePath, String resourcePath) {
+        this.absolutePath = PathUtil.getAbsolutePath(absolutePath);
         this.resourcePath = resourcePath;
-        this.pathPatterns = pathPatterns;
     }
 
     public String getFileAbsolutePath() {
-        return "file://" + this.absolutePath;
+        return this.absolutePath.toUri().toString();
     }
 
-    public String getResourcePath() {
-        return this.pathPatterns + this.resourcePath;
+    public Path createFileAbsPathWithLow(String low) {
+        return Path.of(getAbsolutePath() + s + low);
+    }
+
+    public String createFileResPathWithLow(String low) {
+        return getResourcePath() + low + "/";
     }
 }

@@ -19,6 +19,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.DefaultSecurityFilterChain;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.stereotype.Component;
 
 @Configuration
 @EnableWebSecurity
@@ -29,6 +30,10 @@ public class SecurityConfig {
     private final TokenProvider tokenProvider;
     private final JwtAEntryPoint jwtAEntryPoint;
 
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
@@ -37,9 +42,7 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
 
                 .headers(header ->
-                        header.frameOptions(
-                                HeadersConfigurer.FrameOptionsConfig::sameOrigin
-                        )
+                        header.frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin)
                 )
 
                 .sessionManagement(session ->
@@ -47,32 +50,31 @@ public class SecurityConfig {
                 )
 
                 .authorizeHttpRequests(registry ->
-                        registry
-                                .requestMatchers("/admin/**").hasRole(BasicsKinds.ADMIN.toString())
-                                //.requestMatchers("/tryon/**", "/mem/**").authenticated()
-                                .requestMatchers("/auth/signup/", "/auth/login", "/docs/**", "/swagger-ui/**").permitAll()
+                        registry.requestMatchers("/admin/**").hasRole(BasicsKinds.ADMIN.toString())
                                 .anyRequest().permitAll()
-                )
-
-                .apply(new JwtSecurityConfig(tokenProvider));
-
+                );
         return httpSecurity.build();
     }
 
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
 
     @RequiredArgsConstructor
+    @Component
     public static class JwtSecurityConfig extends SecurityConfigurerAdapter<DefaultSecurityFilterChain, HttpSecurity> {
 
         private final TokenProvider tokenProvider;
 
         @Override
         public void configure(HttpSecurity httpSecurity) throws Exception {
-            JwtFilter customFilter = new JwtFilter(tokenProvider);
-            httpSecurity.addFilterBefore(customFilter, UsernamePasswordAuthenticationFilter.class);
+            JwtFilter customFilter = JwtFilter.builder()
+                    .tokenProvider(tokenProvider)
+                    .ignorePaths(
+                            "/auth/signup", "/auth/login", "/docs/**",
+                            "/swagger-ui/**", "/wdimg/**", "/mimg/**"
+                    )
+                    .build();
+
+            httpSecurity.addFilterAfter(customFilter, UsernamePasswordAuthenticationFilter.class)
+                    .authorizeHttpRequests(request -> request.requestMatchers(customFilter.getIgnorePaths()).permitAll());
         }
     }
 }

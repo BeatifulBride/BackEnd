@@ -2,10 +2,8 @@ package com.memory.beautifulbride.entitys.dress;
 
 import com.memory.beautifulbride.entitys.company.Company;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.NoArgsConstructor;
+import lombok.*;
+import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 
 import java.sql.Date;
@@ -13,17 +11,18 @@ import java.util.List;
 
 @Entity
 @Table(name = "TBL_DRESS_INFO")
+@Getter
 @Builder(toBuilder = true)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 public class DressInfo {
     @Id
-    @Column(name = "DRESS_INDEX")
+    @Column(name = "DRESS_INFO_INDEX")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private final int dressIndex = 0;
+    private final int dressInfoIndex = 0;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "COMAPNY_NO")
+    @JoinColumn(name = "COMPANY_NO")
     private Company company;
 
     @Column(name = "DRESS_DESIGNER")
@@ -39,15 +38,14 @@ public class DressInfo {
     private int dressPrice;
 
     @Column(name = "UPLOAD_DATE")
+    @CreatedDate
     @LastModifiedDate
     private Date uploadDate;
 
-    @OneToOne
+    @OneToOne(optional = false, cascade = CascadeType.ALL, targetEntity = DressMarkCount.class)
+    @JoinColumn(name = "MARK_INDEX", referencedColumnName = "MARK_INDEX")
     private DressMarkCount dressMarkCount;
 
     @OneToMany(mappedBy = "dressInfo", cascade = CascadeType.ALL)
     private List<DressImagePath> dressImagePath;
-
-    @OneToOne(fetch = FetchType.LAZY, targetEntity = DressDetailsInfo.class, cascade = CascadeType.ALL)
-    private DressDetailsInfo dressDetailsInfo;
 }

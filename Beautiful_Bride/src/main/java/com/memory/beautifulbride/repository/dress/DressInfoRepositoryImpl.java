@@ -3,7 +3,10 @@ package com.memory.beautifulbride.repository.dress;
 import com.memory.beautifulbride.dtos.dress.DressListPageDTO;
 import com.memory.beautifulbride.dtos.tryon.TryOnDTO;
 import com.memory.beautifulbride.entitys.company.QCompany;
-import com.memory.beautifulbride.entitys.dress.*;
+import com.memory.beautifulbride.entitys.dress.DressInfo;
+import com.memory.beautifulbride.entitys.dress.QDressImagePath;
+import com.memory.beautifulbride.entitys.dress.QDressInfo;
+import com.memory.beautifulbride.entitys.dress.QDressMarkCount;
 import com.memory.beautifulbride.repository.member.ProfileRepository;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
@@ -27,77 +30,109 @@ public class DressInfoRepositoryImpl implements DressInfoRepositoryDsl {
 
     private final QDressInfo qDressInfo = QDressInfo.dressInfo;
 
-    private final QDressDetailsInfo qDressDetailsInfo = QDressDetailsInfo.dressDetailsInfo;
     private final QDressImagePath qDressImagePath = QDressImagePath.dressImagePath;
     private final QDressMarkCount qDressMarkCount = QDressMarkCount.dressMarkCount;
-    private final QCompany qCompany =QCompany.company;
+    private final QCompany qCompany = QCompany.company;
 
-//    @Override
-//    public ResponseEntity<String> dressNewRegistration(DressNewRegistrationDTO dressNewRegistrationDTO) {
-//        return null;
-//    }
 
-    public List<DressListPageDTO> getAllDresses(){
+    //수정이 필요함
+    @Override
+    public List<DressListPageDTO> getAllDresses() {
         return jpaQueryFactory
                 .select(Projections.fields(
                         DressListPageDTO.class,
-                        qDressInfo.dressIndex,
-                        qDressInfo.dressName,
-                        qDressDetailsInfo.dressLineEnum, // Enum 값을 String으로 변환
+                        qDressInfo.dressInfoIndex.as("dressIndex"),
+                        qDressInfo.dressName.as("dressName"),
                         qDressImagePath.path.as("dressPath"),
-                        qCompany.companyName
+                        qCompany.companyName.as("companyName")
                 ))
                 .from(qDressInfo)
-                .leftJoin(qDressInfo.dressImagePath, qDressImagePath)
-                .leftJoin(qDressInfo.dressDetailsInfo, qDressDetailsInfo)
+                .leftJoin(qDressInfo.dressImagePath, qDressImagePath).on(qDressImagePath.path.contains("front"))
                 .leftJoin(qDressInfo.company, qCompany)
                 .fetch();
     }
 
     @Override
-    public List<DressListPageDTO> getcommpanyTop5Dresses(String companyName) {
-        BooleanExpression companyFilter = companyName != null ? qDressInfo.company.companyName.eq(companyName) : null;
+    public List<DressListPageDTO> getCompanyTop5Dresses(String companyName) {
+        List<Integer> companyFilteredSubQuery = jpaQueryFactory
+                .select(qDressInfo.dressInfoIndex)
+                .from(qDressInfo)
+                .where(companyName != null ? qDressInfo.company.companyName.eq(companyName) : null)
+                .orderBy(qDressMarkCount.markCount.desc())
+                .limit(5)
+                .fetch();
 
+        //현재 사용중인 쿼리에서 조회가 잘 되고 있지 않다
+        // Main query using the results of the subquery
         return jpaQueryFactory
                 .select(Projections.fields(
                         DressListPageDTO.class,
-                        qDressInfo.dressIndex,
-                        qDressInfo.dressName,
-                        qDressDetailsInfo.dressLineEnum, // Enum 값을 String으로 변환
+                        qDressInfo.dressInfoIndex.as("dressIndex"),
+                        qDressInfo.dressName.as("dressName"),
                         qDressImagePath.path.as("dressPath"),
-                        qCompany.companyName
+                        qCompany.companyName.as("companyName")
                 ))
                 .from(qDressInfo)
                 .leftJoin(qDressInfo.dressImagePath, qDressImagePath)
-                .leftJoin(qDressInfo.dressDetailsInfo, qDressDetailsInfo)
                 .leftJoin(qDressInfo.company, qCompany)
-                .leftJoin(qDressInfo.dressMarkCount, qDressMarkCount)
-                .where(companyFilter)
-                .orderBy(qDressMarkCount.markCount.desc()) // 조회수를 기준으로 내림차순 정렬
-                .limit(5) // 상위 5개 결과만 가져오기
+                .where(qDressInfo.dressInfoIndex.in(companyFilteredSubQuery)
+                        .and(qDressImagePath.path.contains("front")))
                 .fetch();
     }
-
     @Override
     public List<DressListPageDTO> getTop5Dresses() {
+        List<Integer> subQuery = jpaQueryFactory
+                .select(qDressInfo.dressInfoIndex)
+                .from(qDressInfo)
+                .orderBy(qDressMarkCount.markCount.desc())
+                .limit(5)
+                .fetch();
+
+        // Use the subquery result as a filter for the main query
         return jpaQueryFactory
                 .select(Projections.fields(
                         DressListPageDTO.class,
-                        qDressInfo.dressIndex,
-                        qDressInfo.dressName,
-                        qDressDetailsInfo.dressLineEnum, // Enum 값을 String으로 변환
+                        qDressInfo.dressInfoIndex.as("dressIndex"),
+                        qDressInfo.dressName.as("dressName"),
                         qDressImagePath.path.as("dressPath"),
-                        qCompany.companyName
+                        qCompany.companyName.as("companyName")
                 ))
                 .from(qDressInfo)
                 .leftJoin(qDressInfo.dressImagePath, qDressImagePath)
-                .leftJoin(qDressInfo.dressDetailsInfo, qDressDetailsInfo)
                 .leftJoin(qDressInfo.company, qCompany)
-                .leftJoin(qDressInfo.dressMarkCount, qDressMarkCount)
-                .orderBy(qDressMarkCount.markCount.desc()) // 조회수를 기준으로 내림차순 정렬
-                .limit(5) // 상위 5개 결과만 가져오기
+                .where(qDressInfo.dressInfoIndex.in(subQuery)
+                        .and(qDressImagePath.path.contains("front")))
                 .fetch();
     }
+//
+//    @Override
+//    public DressDetailsinfoViewDTO getDressAllCollomData(String dressIndex) {
+//        // Use the subquery result as a filter for the main query
+//        List<Integer> dressindexcolumfindsubquery= jpaQueryFactory
+//                .select(qDressInfo.dressInfoIndex)
+//                .from(qDressInfo)
+//                .where(dressIndex != null ? qDressInfo.dressInfoIndex.eq(Integer.valueOf(dressIndex))  : null)
+//                .fetch();
+//
+//        //현재 사용중인 쿼리에서 조회가 잘 되고 있지 않다
+//        // Main query using the results of the subquery
+//        return (DressDetailsinfoViewDTO) jpaQueryFactory
+//                .select(Projections.fields(
+//                        DressDetailsinfoViewDTO.class,
+//                        qDressInfo.dressInfoIndex.as("dressIndex"),
+//                        qDressInfo.dressName.as("dressName"),
+//                        qDressInfo.dressPNumber.as("deressPNumber"),
+//                        qDressInfo.dressPrice.as("dressPrice"),
+//                        qDressImagePath.path.as("dressPath"),
+//                        qCompany.companyName.as("companyName")
+//
+//                ))
+//                .from(qDressInfo)
+//                .leftJoin(qDressInfo.dressImagePath, qDressImagePath)
+//                .leftJoin(qDressInfo.company, qCompany)
+//                .where(qDressInfo.dressInfoIndex.in(dressindexcolumfindsubquery))
+//                .fetch();
+//    }
 
 
     @Override
@@ -109,13 +144,13 @@ public class DressInfoRepositoryImpl implements DressInfoRepositoryDsl {
         DressListPageDTO dressListPageDTO = jpaQueryFactory
                 .select(Projections.fields(
                         DressListPageDTO.class,
-                        qDressInfo.dressIndex,
+                        qDressInfo.dressInfoIndex,
                         qDressInfo.dressName,
                         qDressInfo.company,
                         qDressInfo.dressImagePath
                 ))
                 .from(qDressInfo)
-                .where(qDressInfo.dressIndex.eq(dressIndex)
+                .where(qDressInfo.dressInfoIndex.eq(dressIndex)
                         .and(qDressInfo.company.companyName.eq(companyName)))
                 .fetchOne();
         return dressListPageDTO.getDressPath();
@@ -123,8 +158,8 @@ public class DressInfoRepositoryImpl implements DressInfoRepositoryDsl {
     }
 
 
+    @Override
+    public void updateDressMarkCount(int dressInfoIndex, int count) {
 
-
-
-
+    }
 }

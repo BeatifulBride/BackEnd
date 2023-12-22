@@ -3,14 +3,14 @@ package com.memory.beautifulbride.service.logindata;
 import com.memory.beautifulbride.dtos.company.CompanySignupDTO;
 import com.memory.beautifulbride.dtos.logindata.LoginDataRestPwdDTO;
 import com.memory.beautifulbride.dtos.member.MemberSignupDTO;
+import com.memory.beautifulbride.entitys.company.Company;
 import com.memory.beautifulbride.entitys.logindata.BasicsKinds;
 import com.memory.beautifulbride.entitys.logindata.KindsTBL;
 import com.memory.beautifulbride.entitys.logindata.LoginData;
-import com.memory.beautifulbride.entitys.company.Company;
 import com.memory.beautifulbride.entitys.member.Member;
 import com.memory.beautifulbride.entitys.member.Profile;
-import com.memory.beautifulbride.repository.logindata.LoginDataRepository;
 import com.memory.beautifulbride.repository.company.CompanyRepository;
+import com.memory.beautifulbride.repository.logindata.LoginDataRepository;
 import com.memory.beautifulbride.repository.member.MemberRepository;
 import com.memory.beautifulbride.repository.member.ProfileRepository;
 import lombok.RequiredArgsConstructor;
@@ -22,8 +22,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
-
-import java.sql.Date;
 
 @Service
 @RequiredArgsConstructor

@@ -17,7 +17,8 @@ public class DressMarkCount {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     protected final int markIndex = 0;
 
-    @OneToOne
+    @OneToOne(mappedBy = "dressMarkCount", fetch = FetchType.EAGER, optional = false, cascade = CascadeType.ALL)
+    @JoinColumn(name = "DRESS_INFO_INDEX")
     private DressInfo dressInfo;
 
     @Column(name = "MARK_COUNT")

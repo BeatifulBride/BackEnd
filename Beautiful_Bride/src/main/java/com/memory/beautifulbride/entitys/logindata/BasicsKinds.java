@@ -4,6 +4,7 @@ import com.memory.beautifulbride.config.custom.AbstractEnumToString;
 import com.memory.beautifulbride.repository.logindata.LoginDataKindsRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 import java.util.Arrays;
@@ -21,6 +22,7 @@ public enum BasicsKinds {
 
     @Component
     @RequiredArgsConstructor
+    @Order(1)
     public static class BasicsKindsDataInit implements CommandLineRunner {
 
         private final LoginDataKindsRepository initRepository;
