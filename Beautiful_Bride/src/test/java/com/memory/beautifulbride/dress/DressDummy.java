@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.test.annotation.Rollback;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
@@ -57,10 +58,12 @@ public class DressDummy {
 
     @Test
     @Transactional
+    @Rollback(value = false)
     void setDressPopularityRandom() {
+        int size = dressInfoRepository.getAllDressInfoSize();
         for (int i = 0; i < 30; i++) {
-            int randomSelect = random.nextInt(dressInfoRepository.getAllDressInfoSize());
-            dressInfoRepository.updateDressMarkCount(randomSelect, random.nextInt(451123));
+            int randomSelect = random.nextInt(size);
+            dressInfoRepository.updateDressMarkCountTest(randomSelect, random.nextLong(5646792));
         }
     }
 

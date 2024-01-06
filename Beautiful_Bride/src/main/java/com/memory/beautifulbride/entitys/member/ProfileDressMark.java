@@ -22,5 +22,5 @@ public class ProfileDressMark {
 
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, optional = false)
     @JoinColumn(name = "DRESS_INDEX")
-    private DressInfo dressImage;
+    private DressInfo dressInfo;
 }

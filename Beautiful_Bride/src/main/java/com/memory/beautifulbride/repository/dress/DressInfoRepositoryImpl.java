@@ -7,16 +7,19 @@ import com.memory.beautifulbride.entitys.dress.DressInfo;
 import com.memory.beautifulbride.entitys.dress.QDressImagePath;
 import com.memory.beautifulbride.entitys.dress.QDressInfo;
 import com.memory.beautifulbride.entitys.dress.QDressMarkCount;
-import com.memory.beautifulbride.repository.member.ProfileRepository;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.data.jpa.repository.Modifying;
 
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 @RequiredArgsConstructor
 @Log4j2
@@ -25,8 +28,6 @@ public class DressInfoRepositoryImpl implements DressInfoRepositoryDsl {
     private final JPAQueryFactory jpaQueryFactory;
     private JPAQuery<DressInfo> profileJPAQuery;
     private final BooleanExpression booleanExpression = null;
-    private PasswordEncoder passwordEncoder;
-    private ProfileRepository profileRepository;
 
     private final QDressInfo qDressInfo = QDressInfo.dressInfo;
 
@@ -35,8 +36,6 @@ public class DressInfoRepositoryImpl implements DressInfoRepositoryDsl {
     private final QCompany qCompany = QCompany.company;
 
 
-    //수정이 필요함
-    @Override
     public List<DressListPageDTO> getAllDresses() {
         return jpaQueryFactory
                 .select(Projections.fields(
@@ -57,13 +56,11 @@ public class DressInfoRepositoryImpl implements DressInfoRepositoryDsl {
         List<Integer> companyFilteredSubQuery = jpaQueryFactory
                 .select(qDressInfo.dressInfoIndex)
                 .from(qDressInfo)
-                .where(companyName != null ? qDressInfo.company.companyName.eq(companyName) : null)
+                .where(qDressInfo.company.companyName.eq(companyName))
                 .orderBy(qDressMarkCount.markCount.desc())
                 .limit(5)
                 .fetch();
 
-        //현재 사용중인 쿼리에서 조회가 잘 되고 있지 않다
-        // Main query using the results of the subquery
         return jpaQueryFactory
                 .select(Projections.fields(
                         DressListPageDTO.class,
@@ -79,60 +76,32 @@ public class DressInfoRepositoryImpl implements DressInfoRepositoryDsl {
                         .and(qDressImagePath.path.contains("front")))
                 .fetch();
     }
+
     @Override
     public List<DressListPageDTO> getTop5Dresses() {
-        List<Integer> subQuery = jpaQueryFactory
-                .select(qDressInfo.dressInfoIndex)
-                .from(qDressInfo)
-                .orderBy(qDressMarkCount.markCount.desc())
-                .limit(5)
-                .fetch();
-
-        // Use the subquery result as a filter for the main query
-        return jpaQueryFactory
+        List<DressListPageDTO> dressListPageDTOList = jpaQueryFactory
                 .select(Projections.fields(
                         DressListPageDTO.class,
                         qDressInfo.dressInfoIndex.as("dressIndex"),
                         qDressInfo.dressName.as("dressName"),
-                        qDressImagePath.path.as("dressPath"),
-                        qCompany.companyName.as("companyName")
+                        qDressInfo.company.companyName.as("companyName")
                 ))
                 .from(qDressInfo)
-                .leftJoin(qDressInfo.dressImagePath, qDressImagePath)
-                .leftJoin(qDressInfo.company, qCompany)
-                .where(qDressInfo.dressInfoIndex.in(subQuery)
-                        .and(qDressImagePath.path.contains("front")))
+                .orderBy(qDressInfo.dressMarkCount.markCount.desc()).limit(5).fetch();
+
+        List<Integer> indexList = dressListPageDTOList.stream().map(DressListPageDTO::getDressIndex).toList();
+
+        List<String> pathList = jpaQueryFactory.select(qDressImagePath.path)
+                .from(qDressImagePath)
+                .where(qDressImagePath.pathIndex.in(indexList))
                 .fetch();
+
+        return IntStream.range(0, Math.min(dressListPageDTOList.size(), pathList.size()))
+                .mapToObj(index -> dressListPageDTOList.get(index).toBuilder()
+                        .dressPath(pathList.get(index)).build()
+                )
+                .collect(Collectors.toList());
     }
-//
-//    @Override
-//    public DressDetailsinfoViewDTO getDressAllCollomData(String dressIndex) {
-//        // Use the subquery result as a filter for the main query
-//        List<Integer> dressindexcolumfindsubquery= jpaQueryFactory
-//                .select(qDressInfo.dressInfoIndex)
-//                .from(qDressInfo)
-//                .where(dressIndex != null ? qDressInfo.dressInfoIndex.eq(Integer.valueOf(dressIndex))  : null)
-//                .fetch();
-//
-//        //현재 사용중인 쿼리에서 조회가 잘 되고 있지 않다
-//        // Main query using the results of the subquery
-//        return (DressDetailsinfoViewDTO) jpaQueryFactory
-//                .select(Projections.fields(
-//                        DressDetailsinfoViewDTO.class,
-//                        qDressInfo.dressInfoIndex.as("dressIndex"),
-//                        qDressInfo.dressName.as("dressName"),
-//                        qDressInfo.dressPNumber.as("deressPNumber"),
-//                        qDressInfo.dressPrice.as("dressPrice"),
-//                        qDressImagePath.path.as("dressPath"),
-//                        qCompany.companyName.as("companyName")
-//
-//                ))
-//                .from(qDressInfo)
-//                .leftJoin(qDressInfo.dressImagePath, qDressImagePath)
-//                .leftJoin(qDressInfo.company, qCompany)
-//                .where(qDressInfo.dressInfoIndex.in(dressindexcolumfindsubquery))
-//                .fetch();
-//    }
 
 
     @Override
@@ -158,8 +127,16 @@ public class DressInfoRepositoryImpl implements DressInfoRepositoryDsl {
     }
 
 
+    /** {@inheritDoc} */
     @Override
-    public void updateDressMarkCount(int dressInfoIndex, int count) {
-
+    public void updateDressMarkCountTest(int dressInfoIndex, long count) {
+        jpaQueryFactory.update(qDressMarkCount)
+                .set(qDressMarkCount.markCount, count)
+                .where(qDressMarkCount.markIndex
+                        .in(jpaQueryFactory.select(qDressInfo.dressMarkCount.markIndex)
+                                .from(qDressInfo).where(qDressInfo.dressInfoIndex.eq(dressInfoIndex))
+                        )
+                )
+                .execute();
     }
 }

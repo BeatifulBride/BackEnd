@@ -12,7 +12,7 @@ import java.util.List;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class ProfileMyPageInfoDTO {
+public class ProfileMemberDTO {
     private String memName;
     private Date weddingDate;
     private List<DressMarkDataDTO> dressMarkDataList;
@@ -23,7 +23,7 @@ public class ProfileMyPageInfoDTO {
     @AllArgsConstructor
     @NoArgsConstructor
     public static class DressMarkDataDTO {
-        private Integer dressIndex;
+        private Integer dressInfoIndex;
         private String dressImagePath;
         private String dressPNumber;
         private String companyName;

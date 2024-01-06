@@ -2,6 +2,7 @@ package com.memory.beautifulbride.repository.dress;
 
 import com.memory.beautifulbride.dtos.dress.DressListPageDTO;
 import com.memory.beautifulbride.dtos.tryon.TryOnDTO;
+import org.springframework.data.jpa.repository.Modifying;
 
 import java.util.List;
 
@@ -23,5 +24,6 @@ public interface DressInfoRepositoryDsl {
      * 테스트 용도로 만든 메서드이니 실적용 하지 말것 <br>
      * 테스트 용도 = 좋아요 많이 받은 드레스순 테스트를 위한것
      */
-    void updateDressMarkCount(int dressInfoIndex, int count);
+    @Modifying
+    void updateDressMarkCountTest(int dressInfoIndex, long count);
 }

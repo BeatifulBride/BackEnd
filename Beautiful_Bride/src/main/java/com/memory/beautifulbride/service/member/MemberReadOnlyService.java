@@ -1,7 +1,7 @@
 package com.memory.beautifulbride.service.member;
 
 import com.memory.beautifulbride.dtos.profile.ProfileMainInfoDTO;
-import com.memory.beautifulbride.dtos.profile.ProfileMyPageInfoDTO;
+import com.memory.beautifulbride.dtos.profile.ProfileMemberDTO;
 import com.memory.beautifulbride.repository.member.MemberRepository;
 import com.memory.beautifulbride.repository.member.ProfileRepository;
 import lombok.RequiredArgsConstructor;
@@ -26,7 +26,7 @@ public class MemberReadOnlyService {
                 .orElseThrow(() -> entityNotFound(loginId));
     }
 
-    public ProfileMyPageInfoDTO getMemberMyPageInfo(String loginId) {
+    public ProfileMemberDTO getMemberMyPageInfo(String loginId) {
         return profileRepository
                 .getProfileMyPageInfo(loginId)
                 .orElseThrow(() -> entityNotFound(loginId));

@@ -1,9 +1,9 @@
 package com.memory.beautifulbride.repository.member;
 
 import com.memory.beautifulbride.dtos.profile.ProfileMainInfoDTO;
-import com.memory.beautifulbride.dtos.profile.ProfileMyPageInfoDTO;
-import com.memory.beautifulbride.dtos.profile.ProfileMyPageInfoDTO.DressMarkDataDTO;
-import com.memory.beautifulbride.dtos.profile.ProfileMyPageInfoDTO.TryOnDataDTO;
+import com.memory.beautifulbride.dtos.profile.ProfileMemberDTO;
+import com.memory.beautifulbride.dtos.profile.ProfileMemberDTO.DressMarkDataDTO;
+import com.memory.beautifulbride.dtos.profile.ProfileMemberDTO.TryOnDataDTO;
 import com.memory.beautifulbride.entitys.dress.QDressImagePath;
 import com.memory.beautifulbride.entitys.dress.QDressInfo;
 import com.memory.beautifulbride.entitys.dress.QTryOnImage;
@@ -25,6 +25,7 @@ import lombok.extern.log4j.Log4j2;
 import java.sql.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @RequiredArgsConstructor
 @Log4j2
@@ -57,7 +58,7 @@ public class ProfileRepositoryImpl implements ProfileRepositoryDsl {
     }
 
     @Override
-    public Optional<ProfileMyPageInfoDTO> getProfileMyPageInfo(String loginId) {
+    public Optional<ProfileMemberDTO> getProfileMyPageInfo(String loginId) {
         Tuple profileTuple = jpaQueryFactory
                 .select(qProfile.memName,
                         qProfile.memWeddingDate,
@@ -68,14 +69,14 @@ public class ProfileRepositoryImpl implements ProfileRepositoryDsl {
 
         if (profileTuple == null) throw new EntityNotFoundException("프로필을 찾을 수 없습니다.");
 
-        Integer profileIndex = profileTuple.get(qProfile.profileIndex);
+        int profileIndex = profileTuple.get(qProfile.profileIndex);
         String memName = profileTuple.get(qProfile.memName);
         Date weddingDate = profileTuple.get(qProfile.memWeddingDate);
 
-        List<DressMarkDataDTO> markDataDTOList = getDressMarkDataDTOList(profileIndex);
         List<TryOnDataDTO> tryOnDataDTOList = getTryOnDataDTOList(profileIndex);
+        List<DressMarkDataDTO> markDataDTOList = getDressMarkDataDTOList(profileIndex);
 
-        return Optional.ofNullable(ProfileMyPageInfoDTO.builder()
+        return Optional.ofNullable(ProfileMemberDTO.builder()
                 .memName(memName)
                 .weddingDate(weddingDate)
                 .tryOnImageDataList(tryOnDataDTOList)
@@ -88,13 +89,30 @@ public class ProfileRepositoryImpl implements ProfileRepositoryDsl {
         return qProfile.member.loginData.loginId.eq(loginId);
     }
 
-    private List<DressMarkDataDTO> getDressMarkDataDTOList(Integer profileIndex) {
+    private List<DressMarkDataDTO> getDressMarkDataDTOList(int profileIndex) {
+        List<Integer> dressInfoIndexList = jpaQueryFactory
+                .select(qProfileDressMark.dressInfo.dressInfoIndex)
+                .from(qProfileDressMark)
+                .where(qProfileDressMark.profile.profileIndex.eq(profileIndex))
+                .distinct()
+                .fetch();
 
-        NumberPath<Integer> dressIndex;
-        StringPath dressImagePath;
-        StringPath dressPNumber;
-        StringPath companyName;
-        return null;
+        booleanExpression = qDressInfo.dressInfoIndex.in(dressInfoIndexList)
+                .and(qDressImagePath.dressInfo.dressInfoIndex.like("%/front%"));
+
+        return jpaQueryFactory
+                .select(Projections.fields(
+                        DressMarkDataDTO.class,
+                        qDressInfo.dressInfoIndex.as("dressInfoIndex"),
+                        qDressImagePath.path.as("dressImagePath"),
+                        qDressInfo.dressPNumber.as("dressPNumber"),
+                        qDressInfo.company.companyName.as("companyName")
+                ))
+                .from(qDressInfo)
+                .leftJoin(qDressImagePath)
+                .on(qDressInfo.dressInfoIndex.eq(qDressImagePath.dressInfo.dressInfoIndex))
+                .where(booleanExpression)
+                .fetch();
     }
 
     private List<TryOnDataDTO> getTryOnDataDTOList(Integer profileIndex) {

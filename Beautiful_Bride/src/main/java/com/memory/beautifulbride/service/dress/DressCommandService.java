@@ -24,6 +24,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import org.webjars.NotFoundException;
+
 import java.sql.Date;
 import java.time.LocalDate;
 
@@ -103,22 +104,20 @@ public class DressCommandService {
 
         return map.entrySet().stream().map(entry -> {
                     MultipartFile multipartFile = entry.getValue();
+                    String extend = Objects.requireNonNull(multipartFile.getContentType()).split("/")[1];
+
                     ImgDefinition definition = ImgDefinition.builder()
                             .savePath(savePath)
                             .imgName(entry.getKey())
-                            .imgExtension(
-                                    Objects.requireNonNull(multipartFile.getContentType()
-                                    ).split("/")[1])
+                            .imgExtension(extend)
                             .pathType(PathType.ABSOLUTE)
                             .build();
-
-                   // log.error(definition.test());
 
                     try {
                         imgSaveHandler.imgSave(multipartFile, definition, DeleteOptions.ALL, null);
                         return DressImagePath.builder()
                                 .dressInfo(dressInfo)
-                                .path(resWeddingPath + entry.getKey() + "." + multipartFile.getContentType())
+                                .path(resWeddingPath + entry.getKey() + "." + extend)
                                 .build();
                     } catch (IOException e) {
 

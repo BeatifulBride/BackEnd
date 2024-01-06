@@ -2,6 +2,11 @@ package com.memory.beautifulbride.entitys.logindata;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.security.core.GrantedAuthority;
+
+import java.util.Collection;
+import java.util.List;
+import java.util.stream.Stream;
 
 @Entity
 @Table(name = "TBL_LOGIN_DATA")
@@ -27,4 +32,31 @@ public class LoginData {
     @ManyToOne
     @JoinColumn(name = "KINDS", referencedColumnName = "KINDS")
     private KindsTBL kinds;
+
+    private static List<BasicsKinds> normalMember() {
+        return List.of(BasicsKinds.FREE, BasicsKinds.CHARGED);
+    }
+
+    private static List<BasicsKinds> companyMember() {
+        return List.of(BasicsKinds.COMPANY, BasicsKinds.ADMIN);
+    }
+
+
+    public boolean isNormalMember() {
+        return normalMember().contains(this.kinds.getBasicsKinds());
+    }
+
+    public boolean isCompanyMember() {
+        return companyMember().contains(this.kinds.getBasicsKinds());
+    }
+
+    public static boolean isCompanyMember(Collection<? extends GrantedAuthority> authorities) {
+        for (GrantedAuthority authority : authorities) {
+            BasicsKinds basicsKinds = BasicsKinds.valueOf(authority.getAuthority().replace("ROLE_", ""));
+            if (companyMember().contains(basicsKinds)) {
+                return true;
+            }
+        }
+        return false;
+    }
 }

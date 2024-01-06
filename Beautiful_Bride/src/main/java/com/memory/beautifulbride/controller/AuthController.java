@@ -6,6 +6,7 @@ import com.memory.beautifulbride.dtos.company.CompanySignupDTO;
 import com.memory.beautifulbride.dtos.logindata.LoginDTO;
 import com.memory.beautifulbride.dtos.logindata.LoginDataRestPwdDTO;
 import com.memory.beautifulbride.dtos.member.MemberSignupDTO;
+import com.memory.beautifulbride.entitys.logindata.LoginData;
 import com.memory.beautifulbride.service.logindata.LoginDataCommandService;
 import com.memory.beautifulbride.service.logindata.LoginDataReadOnlyService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -22,6 +23,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+
+import java.util.List;
+import java.util.Map;
 
 @Controller
 @RequiredArgsConstructor
@@ -71,16 +75,17 @@ public class AuthController {
     ResponseEntity<String> resetAccountPwd(LoginDataRestPwdDTO dto) {
         return loginDataCommandService.resetAccountPwd(dto);
     }
+
     @GetMapping("find/account/check/{loginId}/{loginEmail}")
     @Operation(summary = "사용가 계정을 찾기 위한 요청입니다")
     ResponseEntity<String> accountCheck(@PathVariable(name = "loginId") String loginId,
                                         @PathVariable(name = "loginEmail") String loginEmail) {
-        return loginDataReadOnlyService.checkAccountIdandEmail(loginId,loginEmail);
+        return loginDataReadOnlyService.checkAccountIdandEmail(loginId, loginEmail);
     }
 
     @PostMapping("/auth/login")
     @Operation(summary = "로그인 요청 입니다.")
-    ResponseEntity<String> login(LoginDTO loginDTO) {
+    ResponseEntity<Map<String, String>> login(LoginDTO loginDTO) {
 
         UsernamePasswordAuthenticationToken authenticationToken =
                 new UsernamePasswordAuthenticationToken(loginDTO.LOGIN_ID(), loginDTO.LOGIN_PWD());
@@ -96,6 +101,12 @@ public class AuthController {
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.add(JwtFilter.authorizationHeader, "Bearer " + accessToken);
 
-        return new ResponseEntity<>(accessToken, httpHeaders, HttpStatus.OK);
+        boolean isCompany = LoginData.isCompanyMember(authentication.getAuthorities());
+        Map<String, String> accountMapData = Map.of(
+                "token", accessToken,
+                "company", String.valueOf(isCompany)
+        );
+
+        return new ResponseEntity<>(accountMapData, httpHeaders, HttpStatus.OK);
     }
 }
