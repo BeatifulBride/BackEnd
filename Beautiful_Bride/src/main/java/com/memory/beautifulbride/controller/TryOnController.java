@@ -25,7 +25,7 @@ public class TryOnController {
 
 //    @PostMapping(value ="/result",produces = MediaType.APPLICATION_JSON_VALUE)
 //    @Operation(summary = "드레스를 시착하게되면 착용한 드레스가 나타난다!")
-//    ResponseEntity<String> getTryOnResult(Principal principal) {
+//    ResponseEntity<String> getTryOnResult(@AuthenticationPrincipal Principal principal) {
 //        return tryOnCommandService.tryonresult(tryOnDataDTO);
 //    }
 

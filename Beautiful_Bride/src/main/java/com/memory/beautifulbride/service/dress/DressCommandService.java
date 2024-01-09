@@ -7,6 +7,7 @@ import com.memory.beautifulbride.entitys.company.Company;
 import com.memory.beautifulbride.entitys.dress.DressImagePath;
 import com.memory.beautifulbride.entitys.dress.DressInfo;
 import com.memory.beautifulbride.entitys.dress.DressMarkCount;
+import com.memory.beautifulbride.entitys.logindata.LoginData;
 import com.memory.beautifulbride.imgsavehandler.ImgDefinition;
 import com.memory.beautifulbride.imgsavehandler.ImgSaveHandler;
 import com.memory.beautifulbride.imgsavehandler.PathType;
@@ -14,26 +15,30 @@ import com.memory.beautifulbride.imgsavehandler.delete.DeleteOptions;
 import com.memory.beautifulbride.repository.company.CompanyRepository;
 import com.memory.beautifulbride.repository.dress.DressImagePathRepository;
 import com.memory.beautifulbride.repository.dress.DressInfoRepository;
+import com.memory.beautifulbride.repository.dress.DressMarkCountRepository;
 import jakarta.annotation.PostConstruct;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.dao.DataAccessException;
-import org.springframework.data.jpa.repository.support.SimpleJpaRepository;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import org.webjars.NotFoundException;
 
-import java.sql.Date;
-import java.time.LocalDate;
-
-
 import java.io.IOException;
 import java.nio.file.Path;
+import java.sql.Date;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.*;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Random;
 
 @Service
 @RequiredArgsConstructor
@@ -43,13 +48,9 @@ public class DressCommandService {
 
     private final DressInfoRepository dressInfoRepository;
     private final DressImagePathRepository dressImagePathRepository;
-    private SimpleJpaRepository<DressMarkCount, Integer> dressMarkCountRepository;
-
     private final CompanyRepository companyRepository;
-
     private final FileResourceHandler fileResourceHandler;
     private final ImgSaveHandler imgSaveHandler = new ImgSaveHandler();
-
     private SimpleMvcResource weddingDressResource;
 
     @PostConstruct
@@ -58,9 +59,14 @@ public class DressCommandService {
     }
 
     public ResponseEntity<String> dressNewRegistration(String companyId, DressNewRegistrationDTO dto) {
-
-        Company company = Optional.ofNullable(companyRepository.searchFromLoginData(companyId))
-                .orElseThrow(() -> new NotFoundException("업체 정보를 찾지 못했습니다."));
+        Company company;
+        try {
+            company = companyRepository.searchFromLoginData(companyId)
+                    .orElseThrow(() -> new NotFoundException("업체 정보를 찾지 못했습니다."));
+        } catch (NotFoundException e) {
+            log.error("드레스 등록에서 업체가 아닌 유저가 요청 하였습니다. 요청 아이디 :: {}", companyId);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("업체 정보를 찾지 못했습니다.");
+        }
 
         String fng = folderNameGenerator();
         String absWeddingPath = String.valueOf(weddingDressResource.createFileAbsPathWithLow(fng));
@@ -114,7 +120,7 @@ public class DressCommandService {
                             .build();
 
                     try {
-                        imgSaveHandler.imgSave(multipartFile, definition, DeleteOptions.ALL, null);
+                        imgSaveHandler.imgSave(multipartFile, definition, DeleteOptions.ALL);
                         return DressImagePath.builder()
                                 .dressInfo(dressInfo)
                                 .path(resWeddingPath + entry.getKey() + "." + extend)
@@ -128,6 +134,33 @@ public class DressCommandService {
                     }
                 })
                 .toList();
+    }
+
+    public ResponseEntity<String> dressDelete(UserDetails userDetails, int dressIndex) {
+        if (!LoginData.isCompanyMember(userDetails)) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("업체 회원이 아닙니다.");
+        }
+
+        Company company = companyRepository.searchFromLoginData(userDetails.getUsername())
+                .orElseThrow(() -> new EntityNotFoundException("업체 정보를 찾지 못했습니다."));
+
+        DressInfo dressInfo = dressInfoRepository.getDressInfo(dressIndex)
+                .orElseThrow(() -> new EntityNotFoundException("드레스 정보를 찾지 못했습니다."));
+
+
+        if (!company.equals(dressInfo.getCompany())) {
+            log.error("의심되는 요청입니다. 업체 정보와 드레스 소유 업체의 정보가 일치하지 않습니다.");
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("잘못된 요청입니다. 드레스의 소유 업체가 아닙니다.");
+        }
+
+        try {
+            dressInfoRepository.delete(dressInfo);
+        } catch (Exception e) {
+            log.error("드레스 삭제에 실패했습니다. 잘못된 데이터입니다. {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body("드레스 삭제에 실패했습니다. 잘못된 데이터입니다.");
+        }
+
+        return ResponseEntity.ok("해당 드레스가 삭제 되었습니다.");
     }
 
     private String folderNameGenerator() {

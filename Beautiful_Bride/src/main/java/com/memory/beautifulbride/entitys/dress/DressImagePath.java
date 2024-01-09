@@ -17,7 +17,7 @@ public class DressImagePath {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private final int pathIndex = 0;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "DRESS_INFO_INDEX")
     private DressInfo dressInfo;
 

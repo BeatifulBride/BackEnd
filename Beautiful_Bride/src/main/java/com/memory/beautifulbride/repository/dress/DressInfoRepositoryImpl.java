@@ -3,31 +3,23 @@ package com.memory.beautifulbride.repository.dress;
 import com.memory.beautifulbride.dtos.dress.DressListPageDTO;
 import com.memory.beautifulbride.dtos.tryon.TryOnDTO;
 import com.memory.beautifulbride.entitys.company.QCompany;
-import com.memory.beautifulbride.entitys.dress.DressInfo;
 import com.memory.beautifulbride.entitys.dress.QDressImagePath;
 import com.memory.beautifulbride.entitys.dress.QDressInfo;
 import com.memory.beautifulbride.entitys.dress.QDressMarkCount;
 import com.querydsl.core.types.Projections;
-import com.querydsl.core.types.dsl.BooleanExpression;
-import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.data.jpa.repository.Modifying;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-import java.util.stream.Stream;
 
 @RequiredArgsConstructor
 @Log4j2
 public class DressInfoRepositoryImpl implements DressInfoRepositoryDsl {
 
     private final JPAQueryFactory jpaQueryFactory;
-    private JPAQuery<DressInfo> profileJPAQuery;
-    private final BooleanExpression booleanExpression = null;
 
     private final QDressInfo qDressInfo = QDressInfo.dressInfo;
 

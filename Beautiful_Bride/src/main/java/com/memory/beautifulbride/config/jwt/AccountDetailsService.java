@@ -30,11 +30,7 @@ public class AccountDetailsService implements UserDetailsService {
 
     private User createUser(LoginData loginData) {
         List<GrantedAuthority> grantedAuthorities = Collections
-                .singletonList(
-                        new SimpleGrantedAuthority(
-                                loginData.getKinds().getBasicsKinds().name()
-                        )
-                );
+                .singletonList(new SimpleGrantedAuthority(loginData.getKinds().getBasicsKinds().name()));
 
         return new User(loginData.getLoginId(), loginData.getLoginPwd(), grantedAuthorities);
     }

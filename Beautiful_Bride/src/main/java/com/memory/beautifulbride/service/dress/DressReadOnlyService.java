@@ -14,21 +14,11 @@ import java.util.List;
 public class DressReadOnlyService {
     private final DressInfoRepository dressInfoRepository;
 
-
-    public DressListPageDTO getDressDetailInfo(String i) {
-        return null;
-    }
-
     public List<DressListPageDTO> getAllDresses() {
-        //이미지 front 데이터와 함께 전달해주어야 한다
         return dressInfoRepository.getAllDresses();
     }
 
     public List<DressListPageDTO> getTop5Dresses() {
         return dressInfoRepository.getTop5Dresses();
-    }
-
-    public List<DressListPageDTO> getCompanyTop5Dresses(String companyName) {
-        return dressInfoRepository.getCompanyTop5Dresses(companyName);
     }
 }

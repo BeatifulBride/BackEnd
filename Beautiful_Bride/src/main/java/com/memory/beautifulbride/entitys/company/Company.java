@@ -37,6 +37,6 @@ public class Company extends AbstractLoginDataMapping {
     @Column(name = "ADDRESS")
     private String address;
 
-    @OneToMany(mappedBy = "company")
+    @OneToMany(mappedBy = "company", fetch = FetchType.LAZY)
     private List<DressInfo> dressImages;
 }

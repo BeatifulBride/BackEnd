@@ -1,20 +1,18 @@
 package com.memory.beautifulbride.service.company;
 
 
-import com.memory.beautifulbride.dtos.company.CompanyMyPageDTO;
-import com.memory.beautifulbride.entitys.company.Company;
+import com.memory.beautifulbride.dtos.company.CompanyInfoModifyDTO;
 import com.memory.beautifulbride.entitys.logindata.LoginData;
 import com.memory.beautifulbride.repository.company.CompanyRepository;
 import com.memory.beautifulbride.repository.logindata.LoginDataRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.dao.DataAccessException;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.security.Principal;
 
 @Service
 @RequiredArgsConstructor
@@ -25,24 +23,19 @@ public class CompanyCommandService {
     private final CompanyRepository companyRepository;
     private final LoginDataRepository loginDataRepository;
 
-    public ResponseEntity<String> companyInfoModify(String companyId, CompanyMyPageDTO companyMyPageDTO) {
-        LoginData loginData = loginDataRepository.findByLoginId(companyId)
-                .filter(LoginData::isCompanyMember)
-                .orElseThrow(() -> new RuntimeException("업체 회원이 아닙니다."))
-                .toBuilder()
-                .loginEmail(companyMyPageDTO.companyEmail())
-                .build();
 
-        Company company = companyRepository.searchFromLoginData(companyId)
-                .toBuilder()
-                .address(companyMyPageDTO.companyAddress())
-                .companyName(companyMyPageDTO.companyName())
-                .companyPhone(companyMyPageDTO.companyPhone())
-                .build();
+    public ResponseEntity<String> modifyCompanyInfo(UserDetails userDetails, CompanyInfoModifyDTO dto) {
+        try {
+            loginDataRepository.findByLoginId(userDetails.getUsername())
+                    .filter(LoginData::isCompanyMember)
+                    .orElseThrow(RuntimeException::new);
+        } catch (RuntimeException e) {
+            log.error(e.getMessage());
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("업체 회원이 아닙니다.");
+        }
 
         try {
-            loginDataRepository.save(loginData);
-            companyRepository.save(company);
+            companyRepository.modifyCompanyInfo(userDetails.getUsername(), dto.getCompanyName(), dto.getCompanyAddress(), dto.getCompanyPhone());
             return ResponseEntity.ok("업체 정보를 수정 하는데 성공 하였습니다.");
         } catch (DataAccessException e) {
             log.error("업체 정보를 수정하는데 실패했습니다. {}", e.getMessage());

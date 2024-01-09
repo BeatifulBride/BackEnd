@@ -24,7 +24,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import java.util.List;
 import java.util.Map;
 
 @Controller
@@ -36,21 +35,24 @@ public class AuthController {
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
 
     @GetMapping("/auth/idcheck/{loginId}")
-    @Operation(summary = "회원가입-기존 아이디 여부 확인",
+    @Operation(
+            summary = "회원가입-기존 아이디 여부 확인",
             description = "회원가입시 사용됩니다.")
     ResponseEntity<String> accountIdCheck(@PathVariable(name = "loginId") String loginId) {
         return loginDataReadOnlyService.checkIfAccountIdExists(loginId);
     }
 
     @GetMapping("/auth/emailcheck/{loginEmail}")
-    @Operation(summary = "회원가입-기존 이메일 여부 확인",
+    @Operation(
+            summary = "회원가입-기존 이메일 여부 확인",
             description = "회원가입시 사용됩니다.")
     ResponseEntity<String> accountEmailCheck(@PathVariable(name = "loginEmail") String loginEmail) {
         return loginDataReadOnlyService.checkIfAccountEmailExists(loginEmail);
     }
 
     @PostMapping("/auth/signup/member")
-    @Operation(summary = "'멤버'회원 가입 요청입니다.",
+    @Operation(
+            summary = "'멤버'회원 가입 요청입니다.",
             description = "이메일 체크와 아이디 체크를 Front에서 확인하고 넘어간다는 가정하에 요청됩니다.")
     ResponseEntity<String> memberSignup(MemberSignupDTO signup) {
         return loginDataCommandService.createMemberAccount(signup);
@@ -58,7 +60,8 @@ public class AuthController {
 
 
     @PostMapping("/auth/signup/company")
-    @Operation(summary = "'업체'회원 가입 요청입니다.",
+    @Operation(
+            summary = "'업체'회원 가입 요청입니다.",
             description = "이메일 체크와 아이디 체크를 Front에서 체크하고 넘어간다는 가정하에 요청됩니다.")
     ResponseEntity<String> companySignup(CompanySignupDTO signup) {
         return loginDataCommandService.createCompanyAccount(signup);

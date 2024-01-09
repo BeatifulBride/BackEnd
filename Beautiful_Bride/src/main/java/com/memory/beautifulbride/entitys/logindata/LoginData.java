@@ -3,10 +3,10 @@ package com.memory.beautifulbride.entitys.logindata;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.stream.Stream;
 
 @Entity
 @Table(name = "TBL_LOGIN_DATA")
@@ -46,6 +46,10 @@ public class LoginData {
         return normalMember().contains(this.kinds.getBasicsKinds());
     }
 
+    public static boolean isNormalMember(String stringKind) {
+        return normalMember().contains(BasicsKinds.valueOf(stringKind.toUpperCase()));
+    }
+
     public boolean isCompanyMember() {
         return companyMember().contains(this.kinds.getBasicsKinds());
     }
@@ -58,5 +62,9 @@ public class LoginData {
             }
         }
         return false;
+    }
+
+    public static boolean isCompanyMember(UserDetails userDetails) {
+        return isCompanyMember(userDetails.getAuthorities());
     }
 }

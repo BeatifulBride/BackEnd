@@ -6,22 +6,23 @@ import com.memory.beautifulbride.dtos.dress.DressNewRegistrationDTO;
 import com.memory.beautifulbride.service.dress.DressCommandService;
 import com.memory.beautifulbride.service.dress.DressReadOnlyService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
-import org.springdoc.core.annotations.ParameterObject;
-import org.springframework.context.annotation.Profile;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.security.Principal;
 import java.util.List;
 
 @Controller
 @RequiredArgsConstructor
 @RequestMapping("/dress")
+@Log4j2
 public class DressController {
     private final DressReadOnlyService dressReadOnlyService;
     private final DressCommandService dressCommandService;
@@ -32,23 +33,9 @@ public class DressController {
     ResponseEntity<List<DressListPageDTO>> getDressAllList() {
         try {
             List<DressListPageDTO> dresses = dressReadOnlyService.getAllDresses();
-            System.out.println("Retrieved dresses:" + dresses);
             return ResponseEntity.ok(dresses);
         } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
-    }
-
-    @GetMapping(value = "/top5/{companyName}", produces = MediaType.APPLICATION_JSON_VALUE)
-    @Operation(summary = "기업고객의 등록된 드레스 목록 상위 5개를 반환합니다")
-    ResponseEntity<List<DressListPageDTO>> getCompanyTop5Dresses(@PathVariable String companyName) {
-        try {
-            List<DressListPageDTO> dresses = dressReadOnlyService.getCompanyTop5Dresses(companyName);
-            System.out.println("Retrieved dresses:" + dresses);
-            return ResponseEntity.ok(dresses);
-        } catch (Exception e) {
-            e.printStackTrace();
+            log.error(e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
@@ -61,28 +48,20 @@ public class DressController {
             System.out.println("Retrieved dresses:" + dresses);
             return ResponseEntity.ok(dresses);
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error(e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
 
     @PostMapping(value = "/newdress", produces = MediaType.MULTIPART_FORM_DATA_VALUE, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    @Operation(summary = "새 드레스를 등록 합니다.")
-    ResponseEntity<String> dressNewRegistration(Principal principal, DressNewRegistrationDTO dto) {
-        return dressCommandService.dressNewRegistration(principal.getName(), dto);
+    @Operation(summary = "새 드레스를 등록 합니다.", security = @SecurityRequirement(name = "Authorization"))
+    ResponseEntity<String> dressNewRegistration(@Parameter(hidden = true) UserDetails userDetails, DressNewRegistrationDTO dto) {
+        return dressCommandService.dressNewRegistration(userDetails.getUsername(), dto);
     }
 
-    @PostMapping(value = "/newdressTest", produces = MediaType.MULTIPART_FORM_DATA_VALUE, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    @Operation(summary = "새 드레스를 등록 테스트 입니다. 임의의 업체 아이디를 받습니다..")
-    @Profile("dev")
-    ResponseEntity<String> dressNewRegistrationTEST(
-            @RequestParam(name = "testAccountId") String testAccountId,
-            @ParameterObject @ModelAttribute DressNewRegistrationDTO dto,
-            @RequestPart("front") MultipartFile front,
-            @RequestPart("side") MultipartFile side,
-            @RequestPart("back") MultipartFile back
-    ) {
-        dto = dto.toBuilder().front(front).side(side).back(back).build();
-        return dressCommandService.dressNewRegistration(testAccountId, dto);
+    @DeleteMapping("/del/{dressIndex}")
+    @Operation(summary = "드레스 삭제 요청입니다. 해당되는 업체 회원이 아닐 경우에 반려됩니다.", security = @SecurityRequirement(name = "Authorization"))
+    ResponseEntity<String> dressDelete(@Parameter(hidden = true) UserDetails userDetails, @PathVariable("dressIndex") int dressIndex) {
+        return dressCommandService.dressDelete(userDetails, dressIndex);
     }
 }

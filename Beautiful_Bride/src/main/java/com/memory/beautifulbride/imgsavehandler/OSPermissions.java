@@ -63,14 +63,12 @@ public class OSPermissions {
 
         AclEntry aclEntry;
         if (permissions != null) {
-            log.error("권한 객체가 존재합니다. 권한객체 생성중");
             aclEntry = AclEntry.newBuilder()
                     .setPermissions(permissions)
                     .setType(AclEntryType.ALLOW)
                     .setPrincipal(userPrincipal)
                     .build();
         } else {
-            log.error("권한 객체가 존재하지 않습니다. 디폴트 권한객체 생성중");
             aclEntry = AclEntry.newBuilder()
                     .setPermissions(
                             LIST_DIRECTORY, ADD_FILE, ADD_SUBDIRECTORY,
@@ -129,8 +127,6 @@ public class OSPermissions {
         boolean hasAllPosixFilePermission = permissions.stream().allMatch(PosixFilePermission.class::isInstance);
 
         if (isWindows && hasAllAclEntry) {
-            log.error("윈도우 환경이며 ACL 객체가 맞습니다.");
-
             Set<AclEntry> aclEntries = createAclEntrySet((Set<AclEntryPermission>) permissions);
             FileAttribute<Set<AclEntry>> fileAttribute = new FileAttribute<>() {
                 @Override
@@ -147,7 +143,6 @@ public class OSPermissions {
             return (FileAttribute<T>) fileAttribute;
 
         } else if (isLinux && hasAllPosixFilePermission) {
-            log.error("리눅스 환경이며 PFP 객체가 맞습니다.");
             return (FileAttribute<T>) PosixFilePermissions
                     .asFileAttribute((Set<PosixFilePermission>) permissions);
 
