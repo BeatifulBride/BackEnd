@@ -14,6 +14,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.filter.GenericFilterBean;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Objects;
 
 @Log4j2
@@ -37,12 +38,16 @@ public class JwtFilter extends GenericFilterBean {
         String jwt = resolveToken(httpServletRequest);
         String requestURI = httpServletRequest.getRequestURI();
 
-        if (StringUtils.hasText(jwt) && this.tokenProvider.validateToken(jwt)) {
-            Authentication authentication = this.tokenProvider.getAuthentication(jwt);
-            SecurityContextHolder.getContext().setAuthentication(authentication);
-        } else {
-            log.error("유효한 JWT 토큰이 없습니다, uri : {}", requestURI);
+        boolean notIgnore = Arrays.stream(ignorePaths).filter(re -> !re.isBlank())
+                .noneMatch(requestURI::matches);
 
+        if (notIgnore) {
+            if (StringUtils.hasText(jwt) && this.tokenProvider.validateToken(jwt)) {
+                Authentication authentication = this.tokenProvider.getAuthentication(jwt);
+                SecurityContextHolder.getContext().setAuthentication(authentication);
+            } else {
+                log.error("유효한 JWT 토큰이 없습니다, uri : {}", requestURI);
+            }
         }
         chain.doFilter(request, response);
     }

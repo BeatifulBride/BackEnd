@@ -12,8 +12,10 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
@@ -36,7 +38,7 @@ public class CompanyController {
             summary = "업체 마이 페이지 정보 수정 입니다.",
             security = @SecurityRequirement(name = "Authorization")
     )
-    ResponseEntity<String> myPageModify(@Parameter(hidden = true) UserDetails userDetails, CompanyInfoModifyDTO dto) {
+    ResponseEntity<String> myPageModify(@Parameter(hidden = true) UserDetails userDetails, @Validated @RequestBody CompanyInfoModifyDTO dto) {
         return companyCommandService.modifyCompanyInfo(userDetails, dto);
     }
 }

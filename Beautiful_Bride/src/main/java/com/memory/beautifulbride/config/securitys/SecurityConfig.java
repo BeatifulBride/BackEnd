@@ -1,6 +1,5 @@
 package com.memory.beautifulbride.config.securitys;
 
-import com.memory.beautifulbride.config.jwt.JwtAEntryPoint;
 import com.memory.beautifulbride.config.jwt.JwtFilter;
 import com.memory.beautifulbride.config.jwt.TokenPrincipal;
 import com.memory.beautifulbride.config.jwt.TokenProvider;
@@ -55,8 +54,16 @@ public class SecurityConfig {
                 )
 
                 .authorizeHttpRequests(registry ->
-                        registry.requestMatchers("admin/**").hasRole(BasicsKinds.ADMIN.toString())
-                                .requestMatchers("mem/mypage", "mem/mark/**").authenticated()
+                        registry.requestMatchers("admin/**").hasAnyAuthority(BasicsKinds.ADMIN.name())
+
+                                .requestMatchers("mem/mypage", "mem/mark/**", "mem/mark/mymark",
+                                        "mem/mypage/mymark/list", "mem/maininfo", "mem/mypage/tryon/del",
+                                        "mem/mypage/tryon/result")
+                                .hasAnyAuthority(BasicsKinds.FREE.name(), BasicsKinds.CHARGED.name())
+
+                                .requestMatchers("com/mypage", "com/mypage/modify", "dress/del/**")
+                                .hasAnyAuthority(BasicsKinds.ADMIN.name(), BasicsKinds.COMPANY.name())
+
                                 .anyRequest().permitAll()
                 )
                 .with(new JwtSecurityConfig(tokenProvider), Customizer.withDefaults());
@@ -73,6 +80,9 @@ public class SecurityConfig {
         public void configure(HttpSecurity httpSecurity) {
             JwtFilter customFilter = JwtFilter.builder()
                     .tokenProvider(tokenProvider)
+                    .ignorePaths(
+                            "/auth.*", "/find/account.*", "/docs.*", "/swagger-ui.*",
+                            "/v3/api-docs.*")
                     .build();
             httpSecurity.addFilterAfter(customFilter, UsernamePasswordAuthenticationFilter.class);
         }
@@ -82,6 +92,7 @@ public class SecurityConfig {
     public static class WebConfig implements WebMvcConfigurer {
         @Autowired
         private TokenPrincipal principal;
+
         @Override
         public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {
             resolvers.add(principal);

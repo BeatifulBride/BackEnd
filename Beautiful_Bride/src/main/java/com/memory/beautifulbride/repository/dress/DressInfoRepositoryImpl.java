@@ -7,6 +7,7 @@ import com.memory.beautifulbride.entitys.dress.QDressImagePath;
 import com.memory.beautifulbride.entitys.dress.QDressInfo;
 import com.memory.beautifulbride.entitys.dress.QDressMarkCount;
 import com.querydsl.core.types.Projections;
+import com.querydsl.core.types.QBean;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -34,7 +35,7 @@ public class DressInfoRepositoryImpl implements DressInfoRepositoryDsl {
                         DressListPageDTO.class,
                         qDressInfo.dressInfoIndex.as("dressIndex"),
                         qDressInfo.dressName.as("dressName"),
-                        qDressImagePath.path.as("dressPath"),
+                        qDressImagePath.path.as("dressImagePath"),
                         qCompany.companyName.as("companyName")
                 ))
                 .from(qDressInfo)
@@ -58,7 +59,7 @@ public class DressInfoRepositoryImpl implements DressInfoRepositoryDsl {
                         DressListPageDTO.class,
                         qDressInfo.dressInfoIndex.as("dressIndex"),
                         qDressInfo.dressName.as("dressName"),
-                        qDressImagePath.path.as("dressPath"),
+                        qDressImagePath.path.as("dressImagePath"),
                         qCompany.companyName.as("companyName")
                 ))
                 .from(qDressInfo)
@@ -71,26 +72,31 @@ public class DressInfoRepositoryImpl implements DressInfoRepositoryDsl {
 
     @Override
     public List<DressListPageDTO> getTop5Dresses() {
+        QBean<DressListPageDTO> qBean = Projections.fields(
+                DressListPageDTO.class,
+                qDressInfo.dressInfoIndex.as("dressIndex"),
+                qDressInfo.dressName.as("dressName"),
+                qDressInfo.company.companyName.as("companyName")
+        );
+
         List<DressListPageDTO> dressListPageDTOList = jpaQueryFactory
-                .select(Projections.fields(
-                        DressListPageDTO.class,
-                        qDressInfo.dressInfoIndex.as("dressIndex"),
-                        qDressInfo.dressName.as("dressName"),
-                        qDressInfo.company.companyName.as("companyName")
-                ))
+                .select(qBean)
                 .from(qDressInfo)
-                .orderBy(qDressInfo.dressMarkCount.markCount.desc()).limit(5).fetch();
+                .orderBy(qDressMarkCount.markCount.desc()).limit(5)
+                .fetch();
 
         List<Integer> indexList = dressListPageDTOList.stream().map(DressListPageDTO::getDressIndex).toList();
 
         List<String> pathList = jpaQueryFactory.select(qDressImagePath.path)
                 .from(qDressImagePath)
-                .where(qDressImagePath.pathIndex.in(indexList))
+                .where(qDressImagePath.dressInfo.dressInfoIndex.in(indexList)
+                        .and(qDressImagePath.path.like("%/front.%"))
+                )
                 .fetch();
 
         return IntStream.range(0, Math.min(dressListPageDTOList.size(), pathList.size()))
                 .mapToObj(index -> dressListPageDTOList.get(index).toBuilder()
-                        .dressPath(pathList.get(index)).build()
+                        .dressImagePath(pathList.get(index)).build()
                 )
                 .collect(Collectors.toList());
     }
@@ -114,7 +120,7 @@ public class DressInfoRepositoryImpl implements DressInfoRepositoryDsl {
                 .where(qDressInfo.dressInfoIndex.eq(dressIndex)
                         .and(qDressInfo.company.companyName.eq(companyName)))
                 .fetchOne();
-        return dressListPageDTO.getDressPath();
+        return dressListPageDTO.getDressImagePath();
 
     }
 

@@ -12,6 +12,7 @@ import com.memory.beautifulbride.entitys.member.QProfile;
 import com.memory.beautifulbride.entitys.member.QProfileDressMark;
 import com.querydsl.core.Tuple;
 import com.querydsl.core.types.Projections;
+import com.querydsl.core.types.QBean;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.StringPath;
 import com.querydsl.jpa.impl.JPAQuery;
@@ -98,14 +99,17 @@ public class ProfileRepositoryImpl implements ProfileRepositoryDsl {
         booleanExpression = qDressInfo.dressInfoIndex.in(dressInfoIndexList)
                 .and(qDressImagePath.dressInfo.dressInfoIndex.like("%/front%"));
 
+        QBean<DressMarkDataDTO> qBean = Projections.fields(
+                DressMarkDataDTO.class,
+                qDressInfo.dressInfoIndex.as("dressInfoIndex"),
+                qDressImagePath.path.as("dressImagePath"),
+                qDressInfo.dressName.as("dressName"),
+                qDressInfo.dressPNumber.as("dressPNumber"),
+                qDressInfo.company.companyName.as("companyName")
+        );
+
         return jpaQueryFactory
-                .select(Projections.fields(
-                        DressMarkDataDTO.class,
-                        qDressInfo.dressInfoIndex.as("dressInfoIndex"),
-                        qDressImagePath.path.as("dressImagePath"),
-                        qDressInfo.dressPNumber.as("dressPNumber"),
-                        qDressInfo.company.companyName.as("companyName")
-                ))
+                .select(qBean)
                 .from(qDressInfo)
                 .leftJoin(qDressImagePath)
                 .on(qDressInfo.dressInfoIndex.eq(qDressImagePath.dressInfo.dressInfoIndex))

@@ -5,7 +5,7 @@ import lombok.Builder;
 @Builder(toBuilder = true)
 public class DressMyPageViewDTO {
     private int dressIndex;
-    private String dressPath;
+    private String dressImagePath;
     private String dressName;
     private String companyName;
     private String companyAddress;

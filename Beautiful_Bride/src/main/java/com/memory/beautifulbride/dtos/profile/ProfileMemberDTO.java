@@ -24,6 +24,7 @@ public class ProfileMemberDTO {
     @NoArgsConstructor
     public static class DressMarkDataDTO {
         private Integer dressInfoIndex;
+        private String dressName;
         private String dressImagePath;
         private String dressPNumber;
         private String companyName;

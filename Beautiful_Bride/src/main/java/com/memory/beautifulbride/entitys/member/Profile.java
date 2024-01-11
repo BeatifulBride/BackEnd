@@ -42,7 +42,7 @@ public class Profile {
     @Builder.Default
     protected Date uploadDate = Date.valueOf(LocalDate.now());
 
-    @OneToMany(mappedBy = "profile")
+    @OneToMany(mappedBy = "profile", cascade = CascadeType.ALL)
     private List<ProfileDressMark> dressMarks;
 
     @OneToMany(mappedBy = "profile")

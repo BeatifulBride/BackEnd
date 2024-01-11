@@ -4,7 +4,6 @@ import com.memory.beautifulbride.dtos.member.MemberMyMarkDTO;
 import com.memory.beautifulbride.dtos.profile.ProfileMainInfoDTO;
 import com.memory.beautifulbride.dtos.profile.ProfileMemberDTO;
 import com.memory.beautifulbride.entitys.logindata.LoginData;
-import com.memory.beautifulbride.repository.member.MemberRepository;
 import com.memory.beautifulbride.repository.member.ProfileDressMarkRepository;
 import com.memory.beautifulbride.repository.member.ProfileRepository;
 import jakarta.persistence.EntityNotFoundException;

@@ -35,10 +35,7 @@ import java.sql.Date;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Random;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -48,6 +45,7 @@ public class DressCommandService {
 
     private final DressInfoRepository dressInfoRepository;
     private final DressImagePathRepository dressImagePathRepository;
+    private final DressMarkCountRepository dressMarkCountRepository;
     private final CompanyRepository companyRepository;
     private final FileResourceHandler fileResourceHandler;
     private final ImgSaveHandler imgSaveHandler = new ImgSaveHandler();
@@ -136,10 +134,12 @@ public class DressCommandService {
                 .toList();
     }
 
+
     public ResponseEntity<String> dressDelete(UserDetails userDetails, int dressIndex) {
         if (!LoginData.isCompanyMember(userDetails)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("업체 회원이 아닙니다.");
         }
+
 
         Company company = companyRepository.searchFromLoginData(userDetails.getUsername())
                 .orElseThrow(() -> new EntityNotFoundException("업체 정보를 찾지 못했습니다."));
@@ -171,5 +171,14 @@ public class DressCommandService {
                 .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append)
                 .toString();
         return dateTime + "_" + randomStr;
+    }
+
+    private Company companyOptionalCheck(Optional<Company> company) {
+        try {
+            company.orElseThrow(() -> new EntityNotFoundException("업체 정보를 찾지 못했습니다."));
+        } catch (EntityNotFoundException e) {
+            log.error("업체 정보를 찾지 못했습니다. {}", e.getMessage());
+        }
+        return company.get();
     }
 }

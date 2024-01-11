@@ -1,6 +1,7 @@
 package com.memory.beautifulbride.entitys.dress;
 
 import com.memory.beautifulbride.entitys.company.Company;
+import com.memory.beautifulbride.entitys.member.ProfileDressMark;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
@@ -48,4 +49,7 @@ public class DressInfo {
 
     @OneToMany(mappedBy = "dressInfo", cascade = CascadeType.ALL)
     private List<DressImagePath> dressImagePath;
+
+    @OneToMany(mappedBy = "dressInfo", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ProfileDressMark> markList;
 }

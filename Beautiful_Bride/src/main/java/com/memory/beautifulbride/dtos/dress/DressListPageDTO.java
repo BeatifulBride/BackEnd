@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @Builder(toBuilder = true)
 public class DressListPageDTO {
     private int dressIndex;
-    private String dressPath;
+    private String dressImagePath;
     private String dressName;
     private String companyName;
 }

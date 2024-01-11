@@ -8,6 +8,7 @@ import com.memory.beautifulbride.service.dress.DressReadOnlyService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.HttpStatus;
@@ -15,6 +16,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -45,7 +47,6 @@ public class DressController {
     ResponseEntity<List<DressListPageDTO>> getTop5Dresses() {
         try {
             List<DressListPageDTO> dresses = dressReadOnlyService.getTop5Dresses();
-            System.out.println("Retrieved dresses:" + dresses);
             return ResponseEntity.ok(dresses);
         } catch (Exception e) {
             log.error(e.getMessage());
@@ -53,15 +54,15 @@ public class DressController {
         }
     }
 
-    @PostMapping(value = "/newdress", produces = MediaType.MULTIPART_FORM_DATA_VALUE, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PostMapping(value = "/newdress", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @Operation(summary = "새 드레스를 등록 합니다.", security = @SecurityRequirement(name = "Authorization"))
-    ResponseEntity<String> dressNewRegistration(@Parameter(hidden = true) UserDetails userDetails, DressNewRegistrationDTO dto) {
+    ResponseEntity<String> dressNewRegistration(@Parameter(hidden = true) UserDetails userDetails, @Validated @ModelAttribute @RequestPart DressNewRegistrationDTO dto) {
         return dressCommandService.dressNewRegistration(userDetails.getUsername(), dto);
     }
 
     @DeleteMapping("/del/{dressIndex}")
     @Operation(summary = "드레스 삭제 요청입니다. 해당되는 업체 회원이 아닐 경우에 반려됩니다.", security = @SecurityRequirement(name = "Authorization"))
-    ResponseEntity<String> dressDelete(@Parameter(hidden = true) UserDetails userDetails, @PathVariable("dressIndex") int dressIndex) {
+    ResponseEntity<String> dressDelete(@Parameter(hidden = true) UserDetails userDetails, @PathVariable("dressIndex") @NotNull int dressIndex) {
         return dressCommandService.dressDelete(userDetails, dressIndex);
     }
 }

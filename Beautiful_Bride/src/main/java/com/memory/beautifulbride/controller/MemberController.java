@@ -2,12 +2,12 @@ package com.memory.beautifulbride.controller;
 
 import com.memory.beautifulbride.dtos.member.MemberMyMarkDTO;
 import com.memory.beautifulbride.dtos.profile.ProfileMainInfoDTO;
-import com.memory.beautifulbride.dtos.profile.ProfileMemberDTO;
 import com.memory.beautifulbride.service.member.MemberCommandService;
 import com.memory.beautifulbride.service.member.MemberReadOnlyService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -15,7 +15,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.util.List;
@@ -34,17 +33,8 @@ public class MemberController {
             security = @SecurityRequirement(name = "Authorization")
     )
     ResponseEntity<ProfileMainInfoDTO> getMemberMainInfo(@Parameter(hidden = true) UserDetails userDetails) {
-        return ResponseEntity.ok(memberReadOnlyService.getMemberNameAndWeddingDay(userDetails.getUsername()));
-    }
-
-    @PostMapping(value = "/mypage", produces = MediaType.APPLICATION_JSON_VALUE)
-    @Operation(
-            summary = "멤버의 프로필 정보를 반환합니다.",
-            description = "프로필 페이지에서 사용되는 멤버의 정보입니다.",
-            security = @SecurityRequirement(name = "Authorization")
-    )
-    ResponseEntity<ProfileMemberDTO> getMemberMyPageInfo(@Parameter(hidden = true) UserDetails userDetails) {
-        return ResponseEntity.ok(memberReadOnlyService.getMemberMyPageInfo(userDetails));
+        ProfileMainInfoDTO dto = memberReadOnlyService.getMemberNameAndWeddingDay(userDetails.getUsername());
+        return ResponseEntity.ok(dto);
     }
 
     @GetMapping(value = "/mark/{dressIndex}")
@@ -54,7 +44,7 @@ public class MemberController {
     )
     ResponseEntity<String> dressMark(
             @Parameter(hidden = true) UserDetails userDetails,
-            @PathVariable int dressIndex
+            @PathVariable @NotNull int dressIndex
     ) {
         return memberCommandService.memberMark(userDetails.getUsername(), dressIndex);
     }
