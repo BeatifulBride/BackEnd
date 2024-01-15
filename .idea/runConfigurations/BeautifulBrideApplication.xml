@@ -1,0 +1,20 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="BeautifulBrideApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot">
+    <additionalParameters>
+      <param>
+        <option name="enabled" value="true" />
+        <option name="name" value="spring.profiles.include" />
+        <option name="value" value="image_path, token, sql, dev" />
+      </param>
+    </additionalParameters>
+    <option name="ALTERNATIVE_JRE_PATH" value="jbrsdk-17" />
+    <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="true" />
+    <option name="FRAME_DEACTIVATION_UPDATE_POLICY" value="UpdateClassesAndResources" />
+    <module name="Beautiful_Bride.main" />
+    <option name="SPRING_BOOT_MAIN_CLASS" value="com.memory.beautifulbride.BeautifulBrideApplication" />
+    <option name="UPDATE_ACTION_UPDATE_POLICY" value="UpdateClassesAndResources" />
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>
